@@ -1,0 +1,1813 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>喜悦 Tab — 悦享生活，喜由心悦</title>
+<meta name="description" content="喜悦-悦享生活的平板桌面主页：应用、视频、设置与个人主页。">
+<meta name="msvalidate.01" content="ED712836F4BFDB0976F83755B3E8A3A9" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============ 喜悦 Tab · 平板桌面 ============ */
+:root{
+  --t-bg:#06070d;
+  --t-ink:#eef2ff;
+  --t-dim:#9aa3c0;
+  --t-cyan:#6ef0ff;
+  --t-acid:#c8ff4d;
+  --t-violet:#8f7bff;
+  --t-line:rgba(150,170,230,.16);
+  --t-glass:rgba(18,22,40,.42);
+  --t-f-display:'Unbounded',sans-serif;
+  --t-f-body:'Outfit',sans-serif;
+  --t-f-mono:'JetBrains Mono',monospace;
+  --t-status-h:36px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  font-family:var(--t-f-body);color:var(--t-ink);background:#000;
+  overflow:hidden;-webkit-font-smoothing:antialiased;
+  -webkit-user-select:none;user-select:none;cursor:default;
+}
+::selection{background:var(--t-acid);color:#04121a}
+button{font:inherit;color:inherit;background:none;border:0}
+a{color:inherit;text-decoration:none}
+img{display:block;max-width:100%}
+
+/* ---------- 屏幕与壁纸 ---------- */
+#tv-screen{position:fixed;inset:0;overflow:hidden;isolation:isolate}
+.tv-wall{position:absolute;inset:-3%;background:#0a0e1c center/cover no-repeat;
+  transform:scale(1.04);animation:tvWallDrift 40s ease-in-out infinite alternate;
+  will-change:transform}
+.tv-wall::after{content:"";position:absolute;inset:0;
+  background:
+    radial-gradient(120% 80% at 15% 0%,rgba(6,7,13,.15),rgba(6,7,13,.72) 78%),
+    linear-gradient(180deg,rgba(6,7,13,.55),rgba(6,7,13,.25) 30%,rgba(6,7,13,.75));
+}
+@keyframes tvWallDrift{
+  0%{transform:scale(1.04) translate(0,0)}
+  100%{transform:scale(1.10) translate(-2.2%,-1.6%)}
+}
+.tv-stars{position:absolute;inset:0;pointer-events:none;opacity:.5;
+  background-image:radial-gradient(1.4px 1.4px at 12% 24%,rgba(255,255,255,.8),transparent),
+    radial-gradient(1.2px 1.2px at 34% 72%,rgba(110,240,255,.9),transparent),
+    radial-gradient(1.6px 1.6px at 58% 18%,rgba(255,255,255,.6),transparent),
+    radial-gradient(1.2px 1.2px at 74% 56%,rgba(200,255,77,.7),transparent),
+    radial-gradient(1.3px 1.3px at 88% 32%,rgba(255,255,255,.7),transparent),
+    radial-gradient(1.1px 1.1px at 46% 42%,rgba(143,123,255,.8),transparent),
+    radial-gradient(1.2px 1.2px at 66% 86%,rgba(255,255,255,.55),transparent),
+    radial-gradient(1.3px 1.3px at 22% 54%,rgba(110,240,255,.6),transparent);
+  animation:tvTwinkle 6s ease-in-out infinite alternate}
+@keyframes tvTwinkle{from{opacity:.28}to{opacity:.62}}
+
+/* ---------- 状态栏 ---------- */
+.tv-status{position:absolute;top:0;left:0;right:0;height:var(--t-status-h);z-index:70;
+  display:flex;align-items:center;gap:14px;padding:0 20px;
+  font-family:var(--t-f-mono);font-size:11.5px;letter-spacing:.12em;color:rgba(238,242,255,.92);
+  background:linear-gradient(rgba(6,7,13,.55),rgba(6,7,13,.18));
+  backdrop-filter:blur(16px) saturate(1.5);-webkit-backdrop-filter:blur(16px) saturate(1.5);
+  border-bottom:1px solid rgba(255,255,255,.06)}
+.tv-status .tv-sb-left{display:flex;gap:14px;align-items:center}
+.tv-status .tv-sb-dot{width:6px;height:6px;border-radius:50%;background:var(--t-acid);
+  box-shadow:0 0 8px var(--t-acid)}
+.tv-status .tv-sb-right{margin-left:auto;display:flex;align-items:center;gap:14px}
+.tv-status svg{display:block}
+.tv-batt{position:relative;width:26px;height:13px;border:1.4px solid rgba(238,242,255,.85);
+  border-radius:4px;padding:1.6px}
+.tv-batt i{position:absolute;left:1.6px;top:1.6px;bottom:1.6px;width:72%;background:var(--t-acid);
+  border-radius:2px;display:block}
+.tv-batt::after{content:"";position:absolute;right:-4px;top:3.5px;width:2.4px;height:5px;
+  background:rgba(238,242,255,.85);border-radius:0 2px 2px 0}
+
+/* ---------- 桌面布局 ---------- */
+.tv-desktop{position:absolute;inset:var(--t-status-h) 0 0 0;z-index:10;
+  display:grid;grid-template-columns:minmax(280px,340px) 1fr;
+  gap:34px;padding:34px 44px 130px}
+.tv-widgetcol{display:flex;flex-direction:column;gap:20px;min-width:0}
+.tv-appcol{display:flex;flex-direction:column;gap:26px;min-width:0;align-items:flex-start}
+.tv-appgrid{display:grid;grid-template-columns:repeat(4,96px);gap:26px 30px;justify-content:start}
+.tv-sechead{font-family:var(--t-f-mono);font-size:11px;letter-spacing:.26em;text-transform:uppercase;
+  color:rgba(238,242,255,.55);display:flex;align-items:center;gap:10px}
+.tv-sechead::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--t-line),transparent)}
+
+/* 玻璃面板 */
+.tv-glass{background:var(--t-glass);border:1px solid rgba(255,255,255,.12);
+  border-radius:26px;backdrop-filter:blur(26px) saturate(1.6);-webkit-backdrop-filter:blur(26px) saturate(1.6);
+  box-shadow:0 22px 50px -28px rgba(0,0,0,.85), inset 0 1px 0 rgba(255,255,255,.10)}
+
+/* ---------- 组件 ---------- */
+.tv-clockwidget{padding:24px 26px 22px;position:relative;overflow:hidden}
+.tv-clockwidget .tw-time{font-family:var(--t-f-display);font-weight:800;font-size:56px;
+  line-height:1;letter-spacing:-.02em;
+  background:linear-gradient(100deg,var(--t-cyan),var(--t-violet) 55%,var(--t-acid));
+  background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:tvHolo 8s linear infinite}
+@keyframes tvHolo{to{background-position:200% 0}}
+.tv-clockwidget .tw-date{margin-top:10px;font-family:var(--t-f-mono);font-size:12.5px;
+  letter-spacing:.18em;color:var(--t-dim);text-transform:uppercase}
+.tv-clockwidget .tw-tag{margin-top:16px;padding-top:14px;border-top:1px dashed var(--t-line);
+  font-size:13.5px;color:rgba(238,242,255,.75)}
+.tv-clockwidget .tw-tag b{color:var(--t-acid);font-weight:500}
+
+.tv-biliwidget{padding:22px;display:flex;gap:16px;align-items:center}
+.tv-biliwidget .bw-info{min-width:0}
+.tv-biliwidget .bw-name{font-weight:600;font-size:16px;letter-spacing:.01em;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis}
+.tv-biliwidget .bw-sub{margin-top:4px;font-family:var(--t-f-mono);font-size:11px;letter-spacing:.1em;
+  color:var(--t-cyan)}
+.tv-biliwidget .bw-stats{margin-top:8px;display:flex;gap:12px;font-size:12px;color:var(--t-dim)}
+.tv-biliwidget .bw-stats b{color:var(--t-ink);font-weight:600}
+.tv-biliwidget .bw-go{margin-left:auto;flex:none;width:38px;height:38px;border-radius:50%;
+  display:grid;place-items:center;background:rgba(110,240,255,.14);border:1px solid rgba(110,240,255,.4);
+  transition:.3s}
+.tv-biliwidget .bw-go:hover{background:var(--t-cyan);box-shadow:0 0 22px rgba(110,240,255,.5)}
+.tv-biliwidget .bw-go:hover svg{stroke:#04121a}
+.tv-biliwidget .bw-go svg{stroke:var(--t-cyan);transition:.3s}
+
+.tv-quote{padding:20px 24px;display:flex;flex-direction:column;gap:8px}
+.tv-quote .q-main{font-family:var(--t-f-display);font-weight:600;font-size:17px;line-height:1.5}
+.tv-quote .q-main span{color:var(--t-cyan)}
+.tv-quote .q-sub{font-family:var(--t-f-mono);font-size:11px;letter-spacing:.16em;color:var(--t-dim);
+  text-transform:uppercase}
+
+/* ---------- 应用图标 ---------- */
+.tv-app{display:flex;flex-direction:column;align-items:center;gap:9px;width:96px;padding:6px 0;
+  transition:transform .28s cubic-bezier(.2,1.4,.4,1);position:relative}
+.tv-app:active{transform:translateY(-2px) scale(.97)}
+.tv-app .tv-tile{width:66px;height:66px;border-radius:20px;position:relative;display:grid;
+  place-items:center;overflow:hidden;
+  box-shadow:0 14px 30px -12px rgba(0,0,0,.8), inset 0 1px 0 rgba(255,255,255,.28),
+    inset 0 -10px 24px rgba(0,0,0,.28);
+  border:1px solid rgba(255,255,255,.16)}
+.tv-app .tv-tile::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(165deg,rgba(255,255,255,.30),transparent 46%);pointer-events:none}
+.tv-app .tv-tile img{width:34px;height:34px;position:relative;z-index:1;
+  filter:drop-shadow(0 3px 6px rgba(0,0,0,.45))}
+.tv-app .tv-lbl{font-size:12.5px;letter-spacing:.02em;color:rgba(238,242,255,.94);
+  text-shadow:0 2px 8px rgba(0,0,0,.75);white-space:nowrap}
+.t-tile-a{background:#0a84ff}
+.t-tile-b{background:#6a5bff}
+.t-tile-c{background:#2a3150}
+.t-tile-d{background:#39c26a}
+.t-tile-e{background:#ffffff}
+.t-tile-f{background:#ff7a1a}
+.t-tile-g{background:#e6ecfa}
+.t-tile-h{background:#12b8ae}
+.tv-app .tv-run{position:absolute;left:50%;bottom:-6px;width:5px;height:5px;margin-left:-2.5px;
+  border-radius:50%;background:var(--t-acid);opacity:0;box-shadow:0 0 6px var(--t-acid)}
+.tv-app.running .tv-run{opacity:1}
+
+/* ---------- Dock ---------- */
+.tv-dockwrap{position:absolute;left:0;right:0;bottom:16px;z-index:50;display:flex;justify-content:center;
+  pointer-events:none;transition:transform .5s cubic-bezier(.7,0,.2,1),opacity .42s ease}
+#tv-screen.tv-app-open .tv-dockwrap{transform:translateY(160%);opacity:0;pointer-events:none}
+html.tv-fx-off .tv-dockwrap{transition:none!important}
+.tv-dock{pointer-events:auto;display:flex;gap:18px;padding:12px 20px;border-radius:34px;
+  background:rgba(22,26,46,.40);border:1px solid rgba(255,255,255,.16);
+  backdrop-filter:blur(30px) saturate(1.8);-webkit-backdrop-filter:blur(30px) saturate(1.8);
+  box-shadow:0 30px 60px -25px rgba(0,0,0,.9), inset 0 1px 0 rgba(255,255,255,.14)}
+.tv-dock .tv-app{gap:0}
+.tv-dock .tv-lbl{display:none}
+.tv-dock .tv-tile{width:56px;height:56px;border-radius:17px}
+.tv-dock .tv-tile img{width:29px;height:29px}
+.tv-dock .tv-run{bottom:-7px}
+
+/* 手势条区域：整条底部横带屏蔽对后方应用的点击/滚动 */
+.tv-gesturebar{position:absolute;left:0;right:0;bottom:0;height:26px;z-index:56;
+  background:linear-gradient(transparent,rgba(6,7,13,.28));pointer-events:auto}
+.tv-homebar{position:absolute;left:50%;bottom:6px;transform:translateX(-50%);
+  width:130px;height:5px;border-radius:3px;background:rgba(255,255,255,.55);
+  border:0;cursor:pointer;transition:.3s}
+.tv-homebar:hover{background:var(--t-acid);width:150px}
+
+/* ---------- 应用视图（多页面） ---------- */
+.tv-view{position:absolute;inset:var(--t-status-h) 0 0 0;z-index:40;display:none;
+  background:var(--t-bg);overflow:hidden}
+.tv-view.tv-shown{display:block}
+.tv-view.tv-open{opacity:1}
+.tv-anim{opacity:0;transition:opacity .34s ease}
+/* 双层图标转场遮罩 */
+#tv-zback,#tv-zfront{position:absolute;display:none;z-index:35;border-radius:20px;
+  pointer-events:none;will-change:left,top,width,height}
+#tv-zback{transition:left .55s cubic-bezier(.7,0,.2,1),top .55s cubic-bezier(.7,0,.2,1),
+  width .55s cubic-bezier(.7,0,.2,1),height .55s cubic-bezier(.7,0,.2,1),
+  border-radius .55s cubic-bezier(.7,0,.2,1)}
+#tv-zfront{z-index:46;overflow:visible;
+  transition:transform .5s cubic-bezier(.5,0,.15,1),opacity .26s ease .4s}
+#tv-zfront img{width:100%;height:100%;
+  filter:drop-shadow(0 4px 10px rgba(0,0,0,.55))}
+.tv-appbar{position:absolute;top:0;left:0;right:0;height:52px;z-index:30;display:flex;
+  align-items:center;gap:16px;padding:0 20px;
+  background:linear-gradient(rgba(10,12,22,.85),rgba(10,12,22,.55));
+  backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);
+  border-bottom:1px solid var(--t-line)}
+.tv-back{display:flex;align-items:center;gap:8px;font-family:var(--t-f-mono);font-size:12px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--t-cyan);padding:8px 14px;
+  border:1px solid rgba(110,240,255,.35);border-radius:999px;transition:.25s}
+.tv-back:hover{background:rgba(110,240,255,.12);box-shadow:0 0 18px rgba(110,240,255,.3)}
+.tv-appbar .tv-ab-title{font-family:var(--t-f-display);font-weight:600;font-size:15px;letter-spacing:.02em}
+.tv-appbar .tv-ab-note{margin-left:auto;font-family:var(--t-f-mono);font-size:11px;
+  letter-spacing:.16em;color:var(--t-dim);text-transform:uppercase}
+.tv-scroll{position:absolute;inset:52px 0 0 0;overflow-y:auto;overscroll-behavior:contain}
+.tv-scroll::-webkit-scrollbar{width:10px}
+.tv-scroll::-webkit-scrollbar-thumb{background:rgba(150,170,230,.25);border-radius:5px;
+  border:3px solid var(--t-bg)}
+
+/* 视频页 */
+.tv-vids{max-width:940px;margin:0 auto;padding:34px 26px 90px;display:flex;flex-direction:column;gap:16px}
+.tv-vid{display:grid;grid-template-columns:58px 1fr auto;gap:18px;align-items:center;
+  padding:18px 20px;border-radius:18px;background:rgba(16,20,36,.66);
+  border:1px solid var(--t-line);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  transition:.3s}
+.tv-vid:hover{border-color:rgba(110,240,255,.5);transform:translateX(8px);
+  box-shadow:0 18px 40px -24px rgba(110,240,255,.55)}
+.tv-vid .vv-play{width:52px;height:52px;border-radius:16px;display:grid;place-items:center;
+  background:linear-gradient(150deg,rgba(110,240,255,.22),rgba(143,123,255,.18));
+  border:1px solid rgba(110,240,255,.4)}
+.tv-vid .vv-play svg{fill:var(--t-cyan)}
+.tv-vid h3{font-size:16.5px;font-weight:500;letter-spacing:.01em}
+.tv-vid .vv-meta{margin-top:5px;font-family:var(--t-f-mono);font-size:11px;letter-spacing:.1em;
+  color:var(--t-dim);text-transform:uppercase}
+.tv-vid .vv-meta b{color:var(--t-acid);font-weight:500}
+.tv-vid .vv-arrow{font-family:var(--t-f-mono);color:var(--t-cyan);font-size:18px;transition:.3s}
+.tv-vid:hover .vv-arrow{transform:translateX(7px)}
+.tv-vids .tv-vhead{font-family:var(--t-f-display);font-weight:800;font-size:clamp(28px,5vw,46px);
+  letter-spacing:-.02em;margin-bottom:6px}
+.tv-vids .tv-vsub{color:var(--t-dim);font-size:15px;margin-bottom:20px}
+
+/* 设置页 */
+.tv-settings{max-width:760px;margin:0 auto;padding:34px 26px 90px;display:flex;flex-direction:column;gap:22px}
+.tv-settings .tv-shead{font-family:var(--t-f-display);font-weight:800;font-size:clamp(28px,5vw,46px);
+  letter-spacing:-.02em}
+.tv-scard{border-radius:20px;background:rgba(16,20,36,.66);border:1px solid var(--t-line);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);overflow:hidden}
+.tv-srow{display:flex;align-items:center;gap:18px;padding:20px 22px;border-bottom:1px solid var(--t-line)}
+.tv-srow:last-child{border-bottom:0}
+.tv-srow .sr-txt{min-width:0}
+.tv-srow .sr-t{font-size:15.5px;font-weight:500}
+.tv-srow .sr-d{margin-top:4px;font-size:13px;color:var(--t-dim)}
+.tv-srow .sr-v{margin-left:auto;font-family:var(--t-f-mono);font-size:12.5px;letter-spacing:.1em;
+  color:var(--t-cyan);white-space:nowrap}
+.tv-switch{margin-left:auto;flex:none;width:58px;height:32px;border-radius:999px;position:relative;
+  background:rgba(150,170,230,.22);border:1px solid var(--t-line);transition:.3s;cursor:pointer}
+.tv-switch::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;
+  background:#eef2ff;transition:.3s cubic-bezier(.2,1.4,.4,1)}
+.tv-switch.on{background:linear-gradient(90deg,var(--t-cyan),var(--t-acid));border-color:transparent;
+  box-shadow:0 0 18px rgba(110,240,255,.4)}
+.tv-switch.on::after{left:29px;background:#04121a}
+.tv-wallprev{height:150px;background-position:center;background-size:cover;border-radius:14px;
+  border:1px solid var(--t-line);margin-top:12px}
+
+/* ---------- Yumi AI 聊天 ---------- */
+.t-tile-i{background:#ff5d8f}
+.tv-yumi{position:absolute;inset:52px 0 0 0;display:flex;flex-direction:column}
+.tv-ymsgs{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;
+  padding:26px clamp(18px,5vw,64px);display:flex;flex-direction:column;gap:16px}
+.tv-ymsgs::-webkit-scrollbar{width:10px}
+.tv-ymsgs::-webkit-scrollbar-thumb{background:rgba(150,170,230,.25);border-radius:5px}
+.tv-ym{max-width:min(76%,760px);padding:13px 17px;border-radius:16px;font-size:14.5px;line-height:1.7;
+  white-space:pre-wrap;word-break:break-word;animation:tvMsgIn .3s cubic-bezier(.2,.9,.3,1)}
+@keyframes tvMsgIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.tv-ym.user{align-self:flex-end;background:linear-gradient(135deg,var(--t-cyan),var(--t-violet));
+  color:#051019;font-weight:500;border-bottom-right-radius:5px}
+.tv-ym.ai{align-self:flex-start;background:rgba(18,22,40,.7);border:1px solid var(--t-line);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom-left-radius:5px}
+.tv-ym.err{border-color:rgba(255,93,143,.6);color:#ffc2d4;background:rgba(58,12,30,.55)}
+.tv-ym.think{display:flex;gap:7px;align-items:center;color:var(--t-dim);
+  font-family:var(--t-f-mono);font-size:12.5px;letter-spacing:.06em;border:1px dashed var(--t-line);
+  background:rgba(18,22,40,.4);border-bottom-left-radius:5px}
+.tv-ym.think i{width:6px;height:6px;border-radius:50%;background:var(--t-acid);
+  animation:tvThink 1s infinite ease-in-out}
+.tv-ym.think i:nth-child(2){animation-delay:.16s}
+.tv-ym.think i:nth-child(3){animation-delay:.32s}
+@keyframes tvThink{0%,80%,100%{opacity:.25;transform:translateY(0)}40%{opacity:1;transform:translateY(-4px)}}
+.tv-yumi-hint{margin:auto;text-align:center;max-width:460px;color:var(--t-dim);font-size:14px;line-height:1.9}
+.tv-yumi-hint b{display:block;font-family:var(--t-f-display);font-size:28px;letter-spacing:.05em;
+  background:linear-gradient(90deg,var(--t-cyan),var(--t-acid));
+  -webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:10px}
+.tv-ychips{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px}
+.tv-ychip{border:1px solid var(--t-line);border-radius:999px;padding:7px 15px;font-size:12.5px;
+  color:var(--t-cyan);cursor:pointer;background:rgba(18,22,40,.5);transition:.25s}
+.tv-ychip:hover{border-color:var(--t-cyan);box-shadow:0 0 16px rgba(110,240,255,.25)}
+.tv-ybar{border-top:1px solid var(--t-line);background:rgba(9,11,22,.7);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  padding:14px clamp(16px,4vw,48px) 14px;display:flex;gap:12px;align-items:flex-end}
+.tv-yinput{flex:1;min-height:46px;max-height:132px;resize:none;overflow-y:auto;
+  background:rgba(7,9,18,.66);border:1px solid var(--t-line);border-radius:14px;color:var(--t-ink);
+  padding:12px 16px;font:inherit;font-size:14.5px;line-height:1.5;outline:none;transition:.25s}
+.tv-yinput:focus{border-color:rgba(110,240,255,.55);box-shadow:0 0 0 3px rgba(110,240,255,.12)}
+.tv-yinput::placeholder{color:rgba(154,163,192,.6)}
+.tv-ysend{flex:none;height:46px;padding:0 24px;border-radius:14px;background:var(--t-acid);
+  color:#0a1408;font-weight:600;font-size:14px;letter-spacing:.05em;transition:.25s;cursor:pointer}
+.tv-ysend:hover{box-shadow:0 0 22px rgba(200,255,77,.4);transform:translateY(-1px)}
+.tv-ysend:disabled{opacity:.4;cursor:default;transform:none;box-shadow:none}
+.tv-ab-clear{margin-left:12px;flex:none;font-family:var(--t-f-mono);font-size:11px;letter-spacing:.08em;
+  padding:6px 12px;border-radius:999px;border:1px solid var(--t-line);color:var(--t-dim);
+  cursor:pointer;transition:.25s}
+.tv-ab-clear:hover{color:var(--t-acid);border-color:rgba(200,255,77,.5)}
+
+/* ---------- 应用打开动画（桌面层） ---------- */
+.tv-view.tv-anim.tv-shown{display:block}
+
+/* ---------- 性能降级 ---------- */
+html.tv-fx-off .tv-wall,
+html.tv-fx-off .tv-stars,
+html.tv-fx-off .tv-clockwidget .tw-time{animation:none!important}
+html.tv-fx-off .tv-glass,
+html.tv-fx-off .tv-dock,
+html.tv-fx-off .tv-status,
+html.tv-fx-off .tv-appbar,
+html.tv-fx-off .tv-vid,
+html.tv-fx-off .tv-scard,
+html.tv-fx-off .tv-ybar,
+html.tv-fx-off .tv-ym.ai,
+html.tv-fx-off #legacy header,
+html.tv-fx-off #legacy .cur-dot,
+html.tv-fx-off #legacy .cur-ring{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+html.tv-fx-off .tv-glass,html.tv-fx-off .tv-dock,html.tv-fx-off .tv-status,
+html.tv-fx-off .tv-appbar,html.tv-fx-off .tv-vid,html.tv-fx-off .tv-scard,
+html.tv-fx-off .tv-ybar,html.tv-fx-off .tv-ym.ai{background:rgba(13,16,30,.94)!important}
+html.tv-fx-off .tv-anim{transition:none!important}
+html.tv-fx-off .tv-ym,html.tv-fx-off .tv-ym.think i{animation:none!important}
+html.tv-fx-off #tv-zback,html.tv-fx-off #tv-zfront{transition:none!important}
+html.tv-fx-off .tv-vid:hover{transform:none!important}
+html.tv-fx-off *{cursor:auto!important}
+@media (prefers-reduced-motion:reduce){
+  .tv-wall,.tv-stars,.tw-time{animation:none!important}
+  .tv-anim{transition:none!important}
+}
+
+/* ---------- 响应式 ---------- */
+@media(max-width:1020px){
+  .tv-desktop{grid-template-columns:1fr;padding:26px 26px 130px;gap:24px;overflow-y:auto}
+  .tv-widgetcol{flex-direction:row;flex-wrap:wrap}
+  .tv-clockwidget,.tv-biliwidget,.tv-quote{flex:1;min-width:250px}
+  .tv-appgrid{grid-template-columns:repeat(4,88px);gap:22px 24px}
+}
+@media(max-width:640px){
+  .tv-widgetcol{flex-direction:column}
+  .tv-appgrid{grid-template-columns:repeat(3,88px)}
+  .tv-dock{gap:12px;padding:10px 14px}
+  .tv-vid{grid-template-columns:46px 1fr;gap:14px}
+  .tv-vid .vv-arrow{display:none}
+}
+
+/* =========================================================
+   以下为个人主页 App（原单页站点）样式，作用域限定在 #legacy
+========================================================= */
+
+:root{
+  --bg:#06070d;
+  --bg-2:#0a0c16;
+  --ink:#e8ecf7;
+  --ink-dim:#8b93ad;
+  --line:rgba(140,160,220,.14);
+  --cyan:#6ef0ff;
+  --acid:#c8ff4d;
+  --violet:#8f7bff;
+  --glow:0 0 40px rgba(110,240,255,.35);
+  --f-display:'Unbounded',sans-serif;
+  --f-body:'Outfit',sans-serif;
+  --f-mono:'JetBrains Mono',monospace;
+  --max:1240px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+#legacy{
+  background:var(--bg);color:var(--ink);font-family:var(--f-body);
+  font-weight:300;line-height:1.6;overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+#legacy::selection{background:var(--acid);color:#06070d}
+#legacy a{color:inherit;text-decoration:none}
+#legacy img{display:block;max-width:100%}
+
+/* ---------- 背景层 ---------- */
+#bg{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.9}
+.aurora{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.aurora span{
+  position:absolute;border-radius:50%;filter:blur(90px);opacity:.5;
+  animation:drift 26s ease-in-out infinite alternate;
+}
+.aurora .a1{width:52vw;height:52vw;left:-12vw;top:-14vw;background:radial-gradient(circle,rgba(110,240,255,.42),transparent 65%)}
+.aurora .a2{width:44vw;height:44vw;right:-10vw;top:24vh;background:radial-gradient(circle,rgba(143,123,255,.38),transparent 65%);animation-delay:-9s}
+.aurora .a3{width:38vw;height:38vw;left:28vw;bottom:-16vw;background:radial-gradient(circle,rgba(200,255,77,.20),transparent 65%);animation-delay:-17s}
+@keyframes drift{
+  0%{transform:translate3d(0,0,0) scale(1)}
+  100%{transform:translate3d(6vw,-5vh,0) scale(1.18)}
+}
+.grain{
+  position:fixed;inset:-50%;z-index:60;pointer-events:none;opacity:.05;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation:grain 7s steps(6) infinite;
+}
+@keyframes grain{
+  0%,100%{transform:translate(0,0)}20%{transform:translate(-4%,3%)}
+  40%{transform:translate(3%,-4%)}60%{transform:translate(-3%,-2%)}80%{transform:translate(4%,4%)}
+}
+.grid-lines{
+  position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.35;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:72px 72px;
+  mask-image:radial-gradient(ellipse at 50% 30%,#000 30%,transparent 78%);
+  -webkit-mask-image:radial-gradient(ellipse at 50% 30%,#000 30%,transparent 78%);
+}
+
+/* ---------- 自定义光标 ---------- */
+.cur-dot,.cur-ring{position:fixed;top:0;left:0;z-index:99;pointer-events:none;border-radius:50%;mix-blend-mode:difference}
+.cur-dot{width:7px;height:7px;background:var(--cyan);transform:translate(-50%,-50%)}
+.cur-ring{
+  width:38px;height:38px;border:1px solid rgba(110,240,255,.7);
+  transform:translate(-50%,-50%);transition:width .25s,height .25s,border-color .25s,background .25s;
+}
+.cur-ring.hot{width:64px;height:64px;border-color:var(--acid);background:rgba(200,255,77,.08)}
+#legacy:not(.fine-pointer) .cur-dot,#legacy:not(.fine-pointer) .cur-ring{display:none}
+#legacy:not(.fine-pointer){cursor:auto}
+#legacy.fine-pointer{cursor:none}
+#legacy.fine-pointer a,#legacy.fine-pointer button{cursor:none}
+
+/* ---------- 导航 ---------- */
+#legacy header{
+  position:fixed;top:0;left:0;right:0;z-index:50;
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  background:linear-gradient(rgba(6,7,13,.72),rgba(6,7,13,.35));
+  border-bottom:1px solid var(--line);
+}
+.nav{max-width:var(--max);margin:0 auto;padding:16px 28px;display:flex;align-items:center;gap:28px}
+.logo{font-family:var(--f-display);font-weight:800;font-size:17px;letter-spacing:.06em}
+.logo i{color:var(--cyan);font-style:normal}
+.nav-links{display:flex;gap:26px;margin-left:auto;font-family:var(--f-mono);font-size:12.5px;letter-spacing:.12em;text-transform:uppercase}
+.nav-links a{color:var(--ink-dim);position:relative;padding:4px 0;transition:color .25s}
+.nav-links a::after{content:"";position:absolute;left:0;bottom:0;width:0;height:1px;background:var(--cyan);transition:width .3s}
+.nav-links a:hover{color:var(--ink)}
+.nav-links a:hover::after{width:100%}
+.fx-btn{
+  font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;padding:7px 13px;
+  background:transparent;color:var(--acid);border:1px solid rgba(200,255,77,.4);
+  border-radius:999px;transition:.25s;
+}
+.fx-btn:hover{background:rgba(200,255,77,.12);box-shadow:0 0 18px rgba(200,255,77,.25)}
+.fx-btn.off{color:var(--ink-dim);border-color:var(--line)}
+
+/* ---------- 通用 ---------- */
+#legacy main{position:relative;z-index:2}
+#legacy section{max-width:var(--max);margin:0 auto;padding:110px 28px}
+.sec-head{display:flex;align-items:baseline;gap:20px;margin-bottom:52px;border-bottom:1px solid var(--line);padding-bottom:18px}
+.sec-num{font-family:var(--f-mono);color:var(--acid);font-size:13px;letter-spacing:.2em}
+.sec-title{font-family:var(--f-display);font-weight:600;font-size:clamp(26px,4vw,44px);letter-spacing:-.01em}
+.sec-note{margin-left:auto;font-family:var(--f-mono);font-size:11.5px;color:var(--ink-dim);letter-spacing:.14em;text-transform:uppercase}
+
+/* reveal */
+.reveal{opacity:0;transform:translateY(38px);transition:opacity .9s cubic-bezier(.16,1,.3,1),transform .9s cubic-bezier(.16,1,.3,1)}
+.reveal.in{opacity:1;transform:none}
+
+/* ---------- HERO ---------- */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding-top:120px;position:relative}
+.hero-tag{
+  display:inline-flex;align-items:center;gap:10px;font-family:var(--f-mono);font-size:12px;
+  letter-spacing:.22em;text-transform:uppercase;color:var(--cyan);
+  border:1px solid rgba(110,240,255,.3);padding:8px 16px;border-radius:999px;width:max-content;
+  background:rgba(110,240,255,.05);
+}
+.pulse{width:7px;height:7px;border-radius:50%;background:var(--acid);box-shadow:0 0 10px var(--acid);animation:pulse 1.6s infinite}
+@keyframes pulse{50%{opacity:.25;transform:scale(.7)}}
+.hero h1{
+  font-family:var(--f-display);font-weight:800;
+  font-size:clamp(46px,10.5vw,148px);line-height:.95;letter-spacing:-.03em;
+  margin:34px 0 10px;
+}
+.hero h1 .row{display:block;overflow:hidden}
+.hero h1 .row span{display:block;transform:translateY(110%);animation:riseUp 1s cubic-bezier(.16,1,.3,1) forwards}
+.hero h1 .row:nth-child(2) span{animation-delay:.14s}
+.hero h1 .row:nth-child(3) span{animation-delay:.28s}
+@keyframes riseUp{to{transform:translateY(0)}}
+.holo{
+  background:linear-gradient(100deg,var(--cyan) 10%,var(--violet) 48%,var(--acid) 90%);
+  background-size:220% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:holoShift 7s linear infinite;
+}
+@keyframes holoShift{to{background-position:220% 0}}
+.hero-sub{
+  max-width:560px;color:var(--ink-dim);font-size:clamp(15px,1.6vw,19px);margin-top:26px;
+  opacity:0;animation:fadeIn .9s .55s forwards;
+}
+@keyframes fadeIn{to{opacity:1}}
+.hero-cta{display:flex;gap:16px;margin-top:42px;flex-wrap:wrap;opacity:0;animation:fadeIn .9s .75s forwards}
+.btn{
+  font-family:var(--f-mono);font-size:13px;letter-spacing:.12em;text-transform:uppercase;
+  padding:15px 30px;border-radius:2px;position:relative;overflow:hidden;transition:.3s;border:1px solid var(--cyan);
+}
+.btn-solid{background:var(--cyan);color:#04121a;font-weight:500}
+.btn-solid:hover{box-shadow:var(--glow);transform:translateY(-3px)}
+.btn-ghost{color:var(--ink);border-color:var(--line)}
+.btn-ghost:hover{border-color:var(--acid);color:var(--acid);transform:translateY(-3px)}
+.hero-meta{
+  position:absolute;bottom:42px;left:28px;right:28px;display:flex;justify-content:space-between;
+  font-family:var(--f-mono);font-size:11px;letter-spacing:.18em;color:var(--ink-dim);
+  text-transform:uppercase;opacity:0;animation:fadeIn 1s 1s forwards;
+}
+.scroll-hint{writing-mode:vertical-rl;color:var(--cyan)}
+
+/* ---------- 跑马灯 ---------- */
+.marquee{
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  padding:20px 0;overflow:hidden;white-space:nowrap;background:rgba(10,12,22,.5);
+  position:relative;z-index:2;
+}
+.marquee-track{display:inline-flex;gap:52px;animation:scrollX 28s linear infinite;will-change:transform}
+.marquee span{font-family:var(--f-display);font-size:clamp(17px,2.4vw,26px);font-weight:600;letter-spacing:.02em;color:var(--ink-dim)}
+.marquee span em{font-style:normal;color:var(--acid)}
+@keyframes scrollX{to{transform:translateX(-50%)}}
+
+/* ---------- 关于 ---------- */
+.about-grid{display:grid;grid-template-columns:1.25fr .9fr;gap:56px;align-items:start}
+.about-lead{font-size:clamp(20px,2.6vw,30px);line-height:1.45;font-weight:400;letter-spacing:-.01em}
+.about-lead b{color:var(--cyan);font-weight:500}
+.about-body{color:var(--ink-dim);margin-top:26px;font-size:16.5px;max-width:56ch}
+.stat-card{
+  border:1px solid var(--line);background:linear-gradient(160deg,rgba(110,240,255,.06),rgba(143,123,255,.04));
+  padding:30px;border-radius:4px;position:relative;overflow:hidden;
+}
+.stat-card::before{
+  content:"";position:absolute;top:-40%;right:-30%;width:70%;height:180%;
+  background:linear-gradient(90deg,transparent,rgba(110,240,255,.12),transparent);transform:rotate(18deg);
+}
+.stat-row{display:flex;justify-content:space-between;align-items:baseline;padding:15px 0;border-bottom:1px dashed var(--line)}
+.stat-row:last-child{border-bottom:0}
+.stat-row .k{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.14em;color:var(--ink-dim);text-transform:uppercase}
+.stat-row .v{font-family:var(--f-display);font-size:21px;font-weight:600;color:var(--cyan)}
+
+/* ---------- 作品 ---------- */
+.works{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:26px}
+.work{
+  border:1px solid var(--line);border-radius:5px;overflow:hidden;background:var(--bg-2);
+  transition:border-color .35s,box-shadow .35s;transform-style:preserve-3d;position:relative;
+}
+.work:hover{border-color:rgba(110,240,255,.5);box-shadow:0 24px 60px -30px rgba(110,240,255,.45)}
+.work-img{position:relative;aspect-ratio:16/10;overflow:hidden;background:#0d1020}
+.work-img img{width:100%;height:100%;object-fit:cover;transition:transform .8s cubic-bezier(.16,1,.3,1);opacity:.88}
+.work:hover .work-img img{transform:scale(1.07)}
+.work-img::after{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,transparent 40%,rgba(6,7,13,.88));
+}
+.work-badge{
+  position:absolute;top:14px;left:14px;z-index:2;font-family:var(--f-mono);font-size:10.5px;
+  letter-spacing:.16em;text-transform:uppercase;color:#04121a;background:var(--acid);
+  padding:5px 10px;border-radius:2px;font-weight:500;
+}
+.work-body{padding:24px 24px 28px}
+.work-body h3{font-family:var(--f-display);font-size:20px;font-weight:600;letter-spacing:-.01em}
+.work-body p{color:var(--ink-dim);font-size:14.5px;margin-top:10px;min-height:66px}
+.tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.tags i{
+  font-style:normal;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.1em;
+  border:1px solid var(--line);color:var(--ink-dim);padding:4px 9px;border-radius:999px;
+}
+.work-link{
+  display:inline-flex;gap:8px;margin-top:20px;font-family:var(--f-mono);font-size:12px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--cyan);
+}
+.work-link:hover{color:var(--acid)}
+
+/* ---------- 文章 ---------- */
+.post{
+  display:grid;grid-template-columns:130px 1fr auto;gap:26px;align-items:center;
+  padding:28px 8px;border-bottom:1px solid var(--line);transition:.3s;position:relative;
+}
+.post:first-child{border-top:1px solid var(--line)}
+.post::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--acid);transform:scaleY(0);transition:transform .35s}
+.post:hover{padding-left:22px;background:rgba(110,240,255,.03)}
+.post:hover::before{transform:scaleY(1)}
+.post .date{font-family:var(--f-mono);font-size:12px;color:var(--ink-dim);letter-spacing:.08em}
+.post h3{font-size:19px;font-weight:500;letter-spacing:-.01em}
+.post .cat{font-family:var(--f-mono);font-size:11px;color:var(--violet);letter-spacing:.14em;text-transform:uppercase;margin-top:6px;display:block}
+.post .arrow{font-family:var(--f-mono);color:var(--cyan);font-size:18px;transition:transform .3s}
+.post:hover .arrow{transform:translateX(8px)}
+
+/* ---------- 技能 ---------- */
+.skills{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:22px}
+.skill{
+  border:1px solid var(--line);padding:26px;border-radius:4px;background:rgba(10,12,22,.6);
+  transition:.35s;position:relative;overflow:hidden;
+}
+.skill:hover{transform:translateY(-6px);border-color:rgba(200,255,77,.45)}
+.skill .idx{font-family:var(--f-mono);font-size:11px;color:var(--acid);letter-spacing:.2em}
+.skill h4{font-family:var(--f-display);font-size:17px;font-weight:600;margin:14px 0 10px}
+.skill p{color:var(--ink-dim);font-size:14px}
+.bars{display:flex;gap:5px;margin-top:18px}
+.bars i{height:4px;flex:1;background:var(--line);border-radius:2px;transition:background .4s}
+.bars i.on{background:linear-gradient(90deg,var(--cyan),var(--acid))}
+
+/* ---------- 联系 ---------- */
+.contact{text-align:center;padding-bottom:70px}
+.contact h2{
+  font-family:var(--f-display);font-weight:800;font-size:clamp(38px,8vw,110px);
+  line-height:1;letter-spacing:-.03em;margin-bottom:26px;
+}
+.contact p{color:var(--ink-dim);max-width:520px;margin:0 auto 40px;font-size:17px}
+.mail{
+  display:inline-block;font-family:var(--f-mono);font-size:clamp(15px,2.6vw,26px);
+  color:var(--cyan);border-bottom:1px dashed rgba(110,240,255,.5);padding-bottom:6px;transition:.3s;
+}
+.mail:hover{color:var(--acid);border-color:var(--acid);letter-spacing:.03em}
+.socials{display:flex;gap:14px;justify-content:center;margin-top:46px;flex-wrap:wrap}
+.socials a{
+  font-family:var(--f-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+  border:1px solid var(--line);padding:12px 22px;border-radius:999px;color:var(--ink-dim);transition:.3s;
+}
+.socials a:hover{color:#04121a;background:var(--cyan);border-color:var(--cyan);transform:translateY(-4px);box-shadow:var(--glow)}
+
+#legacy footer{
+  border-top:1px solid var(--line);padding:30px 28px;position:relative;z-index:2;
+  display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;
+  font-family:var(--f-mono);font-size:11.5px;letter-spacing:.14em;color:var(--ink-dim);text-transform:uppercase;
+  max-width:var(--max);margin:0 auto;
+}
+
+/* ---------- 粒子光标悬浮反馈 ---------- */
+.magnet{transition:transform .2s ease-out}
+
+/* ---------- 性能降级模式 ---------- */
+#legacy.fx-off .aurora span,
+#legacy.fx-off .grain,
+#legacy.fx-off .marquee-track,
+#legacy.fx-off .pulse,
+#legacy.fx-off .holo,
+#legacy.fx-off .hero h1 .row span{animation:none!important}
+#legacy.fx-off .hero h1 .row span,
+#legacy.fx-off .hero-sub,
+#legacy.fx-off .hero-cta,
+#legacy.fx-off .hero-meta{opacity:1!important;transform:none!important}
+#legacy.fx-off #bg{display:none}
+#legacy.fx-off .grain{display:none}
+#legacy.fx-off .cur-dot,#legacy.fx-off .cur-ring{display:none!important}
+#legacy.fx-off{cursor:auto!important}
+#legacy.fx-off a,#legacy.fx-off button{cursor:pointer!important}
+#legacy.fx-off .reveal{opacity:1!important;transform:none!important;transition:none!important}
+#legacy.fx-off .work,#legacy.fx-off .skill{transition:border-color .3s!important}
+#legacy.fx-off .work-img img{transition:none!important}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  .reveal{opacity:1;transform:none}
+}
+
+@media(max-width:900px){
+  .about-grid{grid-template-columns:1fr}
+  .nav-links{display:none}
+  .post{grid-template-columns:1fr auto}
+  .post .date{grid-column:1/-1}
+  .hero-meta{display:none}
+  #legacy section{padding:80px 20px}
+}
+
+/* --- 旧站作为 App 的容器修正（必须位于旧样式之后） --- */
+#legacy{position:absolute;inset:0;overflow-y:auto;scroll-behavior:smooth;
+  -webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+#legacy header{top:var(--t-status-h)}
+#legacy .hero{min-height:calc(100vh - var(--t-status-h))}
+
+</style>
+</head>
+<body>
+
+<div id="tv-screen">
+  <div class="tv-wall" id="tvWall"></div>
+  <div class="tv-stars"></div>
+
+  <!-- 状态栏 -->
+  <div class="tv-status">
+    <div class="tv-sb-left">
+      <span class="tv-sb-dot"></span>
+      <span id="tvSbDate">--</span>
+      <span id="tvSbTime">--:--</span>
+    </div>
+    <div class="tv-sb-right">
+      <span id="tvSbFx">FX FULL</span>
+      <svg width="17" height="14" viewBox="0 0 17 14" fill="none" aria-label="Wi-Fi">
+        <path d="M1 4.2C3 2.3 5.6 1.2 8.5 1.2S14 2.3 16 4.2" stroke="#eef2ff" stroke-width="1.6" stroke-linecap="round"/>
+        <path d="M3.7 7.2c1.4-1.3 3-2 4.8-2s3.4.7 4.8 2" stroke="#eef2ff" stroke-width="1.6" stroke-linecap="round"/>
+        <path d="M6.4 10.1c.6-.6 1.4-.9 2.1-.9s1.5.3 2.1.9L8.5 12.6 6.4 10.1Z" fill="#eef2ff"/>
+      </svg>
+      <span class="tv-batt"><i></i></span>
+    </div>
+  </div>
+
+  <!-- 桌面 -->
+  <div class="tv-desktop" id="tvDesktop">
+    <div class="tv-widgetcol">
+      <div class="tv-glass tv-clockwidget">
+        <div class="tw-time" id="tvBigTime">00:00</div>
+        <div class="tw-date" id="tvBigDate">LOADING</div>
+        <div class="tw-tag"><b>悦享生活，喜由心悦。</b> 今天也要有趣地折腾。</div>
+      </div>
+
+      <a class="tv-glass tv-biliwidget" href="https://space.bilibili.com/3546937275976343" target="_blank" rel="noopener">
+        <div class="bw-info">
+          <div class="bw-name">喜悦-悦享生活</div>
+          <div class="bw-sub">BILIBILI 科技区 UP主</div>
+          <div class="bw-stats"><span><b>2K+</b> 粉丝</span><span><b>1</b> 年投稿</span></div>
+        </div>
+        <span class="bw-go" aria-label="进入B站空间">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+      </a>
+
+      <div class="tv-glass tv-quote">
+        <div class="q-main">一个<span>有趣的灵魂</span>，<br>无数有趣作品等你发现。</div>
+        <div class="q-sub">YUE PPT Team · OK Store 合伙人</div>
+      </div>
+    </div>
+
+    <div class="tv-appcol">
+      <div class="tv-sechead">应用 / Apps</div>
+      <div class="tv-appgrid">
+        <button class="tv-app" data-open="tv-yumi">
+          <span class="tv-tile t-tile-i"><img src="https://api.iconify.design/mdi/robot-happy-outline.svg?color=%23ffffff&width=112" alt=""></span>
+          <span class="tv-lbl">Yumi AI</span><span class="tv-run"></span>
+        </button>
+        <button class="tv-app" data-open="tv-personal">
+          <span class="tv-tile t-tile-a"><img src="https://api.iconify.design/mdi/home-variant.svg?color=%23ffffff&width=112" alt=""></span>
+          <span class="tv-lbl">个人主页</span><span class="tv-run"></span>
+        </button>
+        <button class="tv-app" data-open="tv-videos">
+          <span class="tv-tile t-tile-b"><img src="https://api.iconify.design/mdi/play-circle-outline.svg?color=%23ffffff&width=112" alt=""></span>
+          <span class="tv-lbl">视频</span><span class="tv-run"></span>
+        </button>
+        <button class="tv-app" data-open="tv-settings">
+          <span class="tv-tile t-tile-c"><img src="https://api.iconify.design/mdi/cog.svg?color=%23ffffff&width=112" alt=""></span>
+          <span class="tv-lbl">设置</span><span class="tv-run"></span>
+        </button>
+        <a class="tv-app" href="mailto:zxc12345639@outlook.com">
+          <span class="tv-tile t-tile-d"><img src="https://api.iconify.design/mdi/email-outline.svg?color=%23ffffff&width=112" alt=""></span>
+          <span class="tv-lbl">邮件</span><span class="tv-run"></span>
+        </a>
+        <a class="tv-app" href="https://space.bilibili.com/3546937275976343" target="_blank" rel="noopener">
+          <span class="tv-tile t-tile-g"><img src="https://api.iconify.design/simple-icons/bilibili.svg?color=%2300A1D6&width=112" alt=""></span>
+          <span class="tv-lbl">Bilibili</span><span class="tv-run"></span>
+        </a>
+        <a class="tv-app" href="https://www.okteam.cn/store/user/59" target="_blank" rel="noopener">
+          <span class="tv-tile t-tile-e"><img src="https://cdn.okteam.cn/site/portal/202607/11_181737_b682b4f2.png" alt=""></span>
+          <span class="tv-lbl">OK Store</span><span class="tv-run"></span>
+        </a>
+        <a class="tv-app" href="https://yue123456.mysxl.cn/" target="_blank" rel="noopener">
+          <span class="tv-tile t-tile-f"><img src="https://api.iconify.design/mdi/compass-outline.svg?color=%23ffffff&width=112" alt=""></span>
+          <span class="tv-lbl">旧站</span><span class="tv-run"></span>
+        </a>
+        <a class="tv-app" href="https://www.douyin.com/search/%E5%96%9C%E6%82%A6-%E6%82%A6%E4%BA%AB%E7%94%9F%E6%B4%BB" target="_blank" rel="noopener">
+          <span class="tv-tile t-tile-h"><img src="https://api.iconify.design/mdi/music-note.svg?color=%23ffffff&width=112" alt=""></span>
+          <span class="tv-lbl">抖音</span><span class="tv-run"></span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dock -->
+  <div class="tv-dockwrap">
+    <div class="tv-dock">
+      <button class="tv-app" data-open="tv-personal">
+        <span class="tv-tile t-tile-a"><img src="https://api.iconify.design/mdi/home-variant.svg?color=%23ffffff&width=112" alt=""></span>
+        <span class="tv-lbl">个人主页</span><span class="tv-run"></span>
+      </button>
+      <button class="tv-app" data-open="tv-videos">
+        <span class="tv-tile t-tile-b"><img src="https://api.iconify.design/mdi/play-circle-outline.svg?color=%23ffffff&width=112" alt=""></span>
+        <span class="tv-lbl">视频</span><span class="tv-run"></span>
+      </button>
+      <a class="tv-app" href="https://space.bilibili.com/3546937275976343" target="_blank" rel="noopener">
+        <span class="tv-tile t-tile-g"><img src="https://api.iconify.design/simple-icons/bilibili.svg?color=%2300A1D6&width=112" alt=""></span>
+        <span class="tv-lbl">Bilibili</span><span class="tv-run"></span>
+      </a>
+      <a class="tv-app" href="mailto:zxc12345639@outlook.com">
+        <span class="tv-tile t-tile-d"><img src="https://api.iconify.design/mdi/email-outline.svg?color=%23ffffff&width=112" alt=""></span>
+        <span class="tv-lbl">邮件</span><span class="tv-run"></span>
+      </a>
+      <button class="tv-app" data-open="tv-settings">
+        <span class="tv-tile t-tile-c"><img src="https://api.iconify.design/mdi/cog.svg?color=%23ffffff&width=112" alt=""></span>
+        <span class="tv-lbl">设置</span><span class="tv-run"></span>
+      </button>
+    </div>
+  </div>
+
+  <div class="tv-gesturebar"><button class="tv-homebar" id="tvHome" aria-label="回到桌面"></button></div>
+
+  <!-- ===== 应用视图 1：个人主页（原单页站点） ===== -->
+  <div class="tv-view tv-anim" id="tv-personal">
+    <div id="legacy">
+      <canvas id="bg"></canvas>
+<div class="aurora"><span class="a1"></span><span class="a2"></span><span class="a3"></span></div>
+<div class="grid-lines"></div>
+<div class="grain"></div>
+<div class="cur-dot"></div>
+<div class="cur-ring"></div>
+
+<header>
+  <nav class="nav">
+    <a href="#top" class="logo">喜悦<i>*</i>悦享生活</a>
+    <div class="nav-links">
+      <a href="#about">关于 / About</a>
+      <a href="#works">作品 / Works</a>
+      <a href="#writing">视频 / Videos</a>
+      <a href="#skills">技能 / Skills</a>
+      <a href="#contact">联系 / Contact</a>
+    </div>
+    <button class="fx-btn" id="fxToggle" title="切换视觉特效">FX · ON</button>
+  </nav>
+</header>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero">
+    <span class="hero-tag"><span class="pulse"></span>BILIBILI 科技区 UP主 · 悦享生活 · 喜由心悦</span>
+    <h1>
+      <span class="row"><span>JOY OF</span></span>
+      <span class="row"><span class="holo">MAKING</span></span>
+      <span class="row"><span>COOL STUFF.</span></span>
+    </h1>
+    <p class="hero-sub">
+      你好，我是喜悦 —— B站科技区 UP主「喜悦-悦享生活」。
+      我用 PPT、代码和镜头，把生活里一切有趣的东西折腾给你看：PPTOS 作品、AI 整活、还有那些莫名其妙的手机玩意儿。
+    </p>
+    <div class="hero-cta">
+      <a href="https://space.bilibili.com/3546937275976343" target="_blank" rel="noopener" class="btn btn-solid magnet">B站看视频 →</a>
+      <a href="#works" class="btn btn-ghost magnet">查看作品</a>
+    </div>
+    <div class="hero-meta">
+      <span>BILIBILI @喜悦-悦享生活 · 2K+ 粉丝</span>
+      <span class="scroll-hint">SCROLL ↓</span>
+      <span id="clock">--:--:--</span>
+    </div>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-track" id="mq">
+      <span>PPTOS <em>✦</em></span><span>悦享生活 <em>✦</em></span>
+      <span>喜由心悦 <em>✦</em></span><span>AI 整活 <em>✦</em></span>
+      <span>BILIBILI 科技区 <em>✦</em></span><span>HTML 手机系统 <em>✦</em></span>
+      <span>有趣的灵魂 <em>✦</em></span><span>YUE PPT TEAM <em>✦</em></span>
+    </div>
+  </div>
+
+  <!-- 关于 -->
+  <section id="about">
+    <div class="sec-head reveal">
+      <span class="sec-num">01</span>
+      <h2 class="sec-title">关于我</h2>
+      <span class="sec-note">About</span>
+    </div>
+    <div class="about-grid">
+      <div class="reveal">
+        <p class="about-lead">
+          悦享生活，<b>喜由心悦</b>。
+          我是喜悦 —— 一个有趣的灵魂，把觉得好玩的东西通通做成作品。
+        </p>
+        <p class="about-body">
+          一年前我在 B站报到，如今已经有 2K+ 位小伙伴陪我一起折腾。我的视频没有固定题材、
+          也没有固定时间：有 24.6 万播放的「如何用设置看B站？」，有把 DeepSeek 和 vivo 手机 AI
+          调教得奇奇怪怪的实验，会做一上午只为一条 WindowsXP 怀旧视频，也会把 vivo 铃声玩出
+          「全损版」花样。PPT 是我的老本行 —— PPTOS 作品系列陪我在学校的希沃白板上疯狂展示。
+        </p>
+        <p class="about-body">
+          现在的身份清单：<b style="color:var(--acid);font-weight:500">B站科技区 UP主</b>、
+          <b style="color:var(--acid);font-weight:500">OK Store 合伙人</b>
+          （YUE PPT Team，用心设计好每一件作品）、
+          <b style="color:var(--acid);font-weight:500">HTML 手机系统 / 个人网站作者</b>。
+        </p>
+      </div>
+      <div class="stat-card reveal">
+        <div class="stat-row"><span class="k">B站粉丝 / Followers</span><span class="v" data-count="2000">0</span></div>
+        <div class="stat-row"><span class="k">做视频 / Years on Bilibili</span><span class="v" data-count="1">0</span></div>
+        <div class="stat-row"><span class="k">OK Store 资源</span><span class="v" data-count="4">0</span></div>
+        <div class="stat-row"><span class="k">成名作 / Signature</span><span class="v">PPTOS</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 作品 -->
+  <section id="works">
+    <div class="sec-head reveal">
+      <span class="sec-num">02</span>
+      <h2 class="sec-title">精选作品</h2>
+      <span class="sec-note">Selected Works</span>
+    </div>
+    <div class="works">
+      <article class="work reveal tilt">
+        <div class="work-img">
+          <span class="work-badge">Featured</span>
+          <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=stunning%20modern%20ppt%20slide%20design%20presentation%20on%20a%20large%20classroom%20interactive%20whiteboard%2C%20bold%20typography%2C%20cyan%20and%20lime%20accent%20colors%20on%20dark%20background%2C%20clean%20tech%20aesthetic%2C%20cinematic%20room%20lighting%2C%20high%20detail&image_size=landscape_16_9" alt="PPTOS 演示设计作品">
+        </div>
+        <div class="work-body">
+          <h3>PPTOS 作品系列</h3>
+          <p>我的成名作：用心设计好每一件 PPT 作品，在学校希沃白板和 B站上疯狂展示，也是 OK Store 上架资源的灵感来源。</p>
+          <div class="tags"><i>PPT 设计</i><i>YUE PPT Team</i><i>OK Store</i></div>
+          <a href="https://yue123456.mysxl.cn/#%E6%A0%87%E9%A2%982" target="_blank" rel="noopener" class="work-link">VIEW CASE →</a>
+        </div>
+      </article>
+
+      <article class="work reveal tilt">
+        <div class="work-img">
+          <span class="work-badge" style="background:var(--cyan)">Lab</span>
+          <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=smartphone%20showing%20a%20homemade%20html%20operating%20system%20interface%2C%20glowing%20app%20icons%20and%20widgets%20on%20dark%20futuristic%20home%20screen%2C%20neon%20cyan%20accents%2C%20held%20in%20hand%20over%20black%20desk%2C%20product%20photography%20style&image_size=landscape_16_9" alt="HTML 手机系统界面">
+        </div>
+        <div class="work-body">
+          <h3>HTML 手机系统</h3>
+          <p>纯 HTML/CSS 搞出来的「手机系统」，真的很有意思 —— 桌面、应用、设置都能点，欢迎来试玩。</p>
+          <div class="tags"><i>HTML</i><i>CSS</i><i>JavaScript</i></div>
+          <a href="https://yue123456.mysxl.cn/" target="_blank" rel="noopener" class="work-link">VIEW CASE →</a>
+        </div>
+      </article>
+
+      <article class="work reveal tilt">
+        <div class="work-img">
+          <span class="work-badge" style="background:var(--violet);color:#fff">Video</span>
+          <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=smartphone%20settings%20menu%20screen%20hacked%20to%20play%20a%20video%20site%2C%20glowing%20toggle%20switches%20and%20menu%20items%2C%20futuristic%20dark%20ui%20with%20neon%20cyan%20and%20lime%20accents%2C%20hand%20holding%20phone%20in%20dark%20room%2C%20playful%20tech%20vibe%2C%20high%20detail&image_size=landscape_16_9" alt="看B站整活系列视频">
+        </div>
+        <div class="work-body">
+          <h3>「看B站」整活系列</h3>
+          <p>「如何用设置看B站？」「小天才Q1y成功看上B站了！」—— 各种脑洞大开的看 B站姿势，代表作 24.6 万播放。</p>
+          <div class="tags"><i>手机整活</i><i>教程</i><i>B站科技区</i></div>
+          <a href="https://www.bilibili.com/video/BV1yKZxB4E7g/" target="_blank" rel="noopener" class="work-link">WATCH →</a>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- 文章 -->
+  <section id="writing">
+    <div class="sec-head reveal">
+      <span class="sec-num">03</span>
+      <h2 class="sec-title">最新视频</h2>
+      <span class="sec-note">Latest Videos</span>
+    </div>
+    <div class="reveal">
+      <a class="post" href="https://www.bilibili.com/video/BV1yKZxB4E7g/" target="_blank" rel="noopener">
+        <span class="date">2026.02.15</span>
+        <div><h3>如何用设置看B站？</h3><span class="cat">代表作 · 24.6万播放</span></div>
+        <span class="arrow">→</span>
+      </a>
+      <a class="post" href="https://www.bilibili.com/video/BV14xhWzrEGk/" target="_blank" rel="noopener">
+        <span class="date">AI 实验</span>
+        <div><h3>有趣的 DeepSeek</h3><span class="cat">教程 · DeepSeek</span></div>
+        <span class="arrow">→</span>
+      </a>
+      <a class="post" href="https://www.bilibili.com/video/BV1cWe1zNEBF/" target="_blank" rel="noopener">
+        <span class="date">怀旧经典</span>
+        <div><h3>WindowsXP真是一代经典啊，比那个叫什么11的强太多了!!!</h3><span class="cat">做了一上午的视频 · 系统怀旧</span></div>
+        <span class="arrow">→</span>
+      </a>
+      <a class="post" href="https://www.bilibili.com/video/BV1PWNwzVEFB/" target="_blank" rel="noopener">
+        <span class="date">2026.03.07</span>
+        <div><h3>vivo闹钟铃声《新世界》，但是全损版</h3><span class="cat">音乐整活 · vivo 铃声</span></div>
+        <span class="arrow">→</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- 技能 -->
+  <section id="skills">
+    <div class="sec-head reveal">
+      <span class="sec-num">04</span>
+      <h2 class="sec-title">能力矩阵</h2>
+      <span class="sec-note">What I Do</span>
+    </div>
+    <div class="skills">
+      <div class="skill reveal">
+        <span class="idx">/01</span>
+        <h4>PPT 设计</h4>
+        <p>PPTOS 风格演示设计，OK Store 4 个上架资源，YUE PPT Team 组织者。</p>
+        <div class="bars"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div>
+      </div>
+      <div class="skill reveal">
+        <span class="idx">/02</span>
+        <h4>视频创作</h4>
+        <p>B站科技区 UP主，选题、拍摄、剪辑、字幕一条龙，随缘但高产。</p>
+        <div class="bars"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div>
+      </div>
+      <div class="skill reveal">
+        <span class="idx">/03</span>
+        <h4>AI 玩法实验</h4>
+        <p>DeepSeek、vivo 手机 AI 等大模型整活实验，把 AI 调教得奇奇怪怪。</p>
+        <div class="bars"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div>
+      </div>
+      <div class="skill reveal">
+        <span class="idx">/04</span>
+        <h4>网页折腾</h4>
+        <p>HTML 手机系统、个人主页、神秘方法 —— 会点代码，够玩出花样。</p>
+        <div class="bars"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 联系 -->
+  <section id="contact" class="contact">
+    <div class="reveal">
+      <span class="sec-num" style="display:block;margin-bottom:18px">05 — CONTACT</span>
+      <h2>LET'S<br><span class="holo">CONNECT</span></h2>
+      <p>想看更新、聊 PPT、或者一起整活？来 B站找我，或者发邮件、加 QQ 群 1062762654 —— 关注我的人我都会回关的哦。</p>
+      <a href="mailto:zxc12345639@outlook.com" class="mail magnet">zxc12345639@outlook.com</a>
+      <div class="socials">
+        <a href="https://space.bilibili.com/3546937275976343" target="_blank" rel="noopener">Bilibili</a>
+        <a href="https://yue123456.mysxl.cn/" target="_blank" rel="noopener">个人主页</a>
+        <a href="https://www.okteam.cn/store/user/59" target="_blank" rel="noopener">OK Store</a>
+        <a href="https://www.douyin.com/search/%E5%96%9C%E6%82%A6-%E6%82%A6%E4%BA%AB%E7%94%9F%E6%B4%BB" target="_blank" rel="noopener">抖音</a>
+        <a href="https://qm.qq.com/q/rFeorXxUiY" target="_blank" rel="noopener">QQ 群 · 喜悦小屋</a>
+        <a href="mailto:zxc12345639@outlook.com">Email</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <span>© 2026 喜悦-悦享生活 — 悦享生活，喜由心悦</span>
+  <span id="perfStatus">RENDER · FULL FX</span>
+  <span>BILIBILI @喜悦-悦享生活</span>
+</footer>
+    </div>
+  </div>
+
+  <!-- ===== 应用视图 2：视频 ===== -->
+  <div class="tv-view tv-anim" id="tv-videos">
+    <div class="tv-appbar">
+      <button class="tv-back" data-close>
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M7.5 2 3.5 6l4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        主页
+      </button>
+      <span class="tv-ab-title">视频</span>
+      <span class="tv-ab-note">Bilibili · 喜悦-悦享生活</span>
+    </div>
+    <div class="tv-scroll">
+      <div class="tv-vids">
+        <h2 class="tv-vhead">最新投稿</h2>
+        <p class="tv-vsub">来自 B站科技区的整活与教程，点击任意一条直达视频页。</p>
+        <a class="tv-vid" href="https://www.bilibili.com/video/BV1yKZxB4E7g/" target="_blank" rel="noopener">
+          <span class="vv-play"><svg width="20" height="20" viewBox="0 0 20 20"><path d="M7 4.5v11l9-5.5-9-5.5Z"/></svg></span>
+          <div><h3>如何用设置看B站？</h3><div class="vv-meta">2026.02.15 · <b>24.6万播放</b> · 代表作</div></div>
+          <span class="vv-arrow">-&gt;</span>
+        </a>
+        <a class="tv-vid" href="https://www.bilibili.com/video/BV1XLaz67EnT/" target="_blank" rel="noopener">
+          <span class="vv-play"><svg width="20" height="20" viewBox="0 0 20 20"><path d="M7 4.5v11l9-5.5-9-5.5Z"/></svg></span>
+          <div><h3>小天才Q1y成功看上B站了！</h3><div class="vv-meta">手机整活 · <b>6384播放</b></div></div>
+          <span class="vv-arrow">-&gt;</span>
+        </a>
+        <a class="tv-vid" href="https://www.bilibili.com/video/BV1dhHk6qEx2/" target="_blank" rel="noopener">
+          <span class="vv-play"><svg width="20" height="20" viewBox="0 0 20 20"><path d="M7 4.5v11l9-5.5-9-5.5Z"/></svg></span>
+          <div><h3>vivo 的 DeepSeek 竟然能生图？！</h3><div class="vv-meta">AI 实验 · <b>1481播放</b></div></div>
+          <span class="vv-arrow">-&gt;</span>
+        </a>
+        <a class="tv-vid" href="https://www.bilibili.com/video/BV1nQp962EAq/" target="_blank" rel="noopener">
+          <span class="vv-play"><svg width="20" height="20" viewBox="0 0 20 20"><path d="M7 4.5v11l9-5.5-9-5.5Z"/></svg></span>
+          <div><h3>希沃真美味</h3><div class="vv-meta">校园日常 · <b>855播放</b></div></div>
+          <span class="vv-arrow">-&gt;</span>
+        </a>
+        <a class="tv-vid" href="https://www.bilibili.com/video/BV14xhWzrEGk/" target="_blank" rel="noopener">
+          <span class="vv-play"><svg width="20" height="20" viewBox="0 0 20 20"><path d="M7 4.5v11l9-5.5-9-5.5Z"/></svg></span>
+          <div><h3>有趣的 DeepSeek</h3><div class="vv-meta">AI 整活 · 教程</div></div>
+          <span class="vv-arrow">-&gt;</span>
+        </a>
+        <a class="tv-vid" href="https://www.bilibili.com/video/BV1cWe1zNEBF/" target="_blank" rel="noopener">
+          <span class="vv-play"><svg width="20" height="20" viewBox="0 0 20 20"><path d="M7 4.5v11l9-5.5-9-5.5Z"/></svg></span>
+          <div><h3>WindowsXP真是一代经典啊，比那个叫什么11的强太多了!!!</h3><div class="vv-meta">系统怀旧 · 做了一上午</div></div>
+          <span class="vv-arrow">-&gt;</span>
+        </a>
+        <a class="tv-vid" href="https://www.bilibili.com/video/BV1PWNwzVEFB/" target="_blank" rel="noopener">
+          <span class="vv-play"><svg width="20" height="20" viewBox="0 0 20 20"><path d="M7 4.5v11l9-5.5-9-5.5Z"/></svg></span>
+          <div><h3>vivo闹钟铃声《新世界》，但是全损版</h3><div class="vv-meta">2026.03.07 · 音乐整活</div></div>
+          <span class="vv-arrow">-&gt;</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 应用视图 3：设置 ===== -->
+  <div class="tv-view tv-anim" id="tv-settings">
+    <div class="tv-appbar">
+      <button class="tv-back" data-close>
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M7.5 2 3.5 6l4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        主页
+      </button>
+      <span class="tv-ab-title">设置</span>
+      <span class="tv-ab-note">喜悦 Tab · 单文件版</span>
+    </div>
+    <div class="tv-scroll">
+      <div class="tv-settings">
+        <h2 class="tv-shead">设置</h2>
+        <div class="tv-scard">
+          <div class="tv-srow">
+            <div class="sr-txt">
+              <div class="sr-t">视觉特效</div>
+              <div class="sr-d">模糊、动画与粒子效果。性能不足时系统会自动关闭大多数效果。</div>
+            </div>
+            <button class="tv-switch" id="tvFxSwitch" role="switch" aria-label="视觉特效开关"></button>
+          </div>
+          <div class="tv-srow">
+            <div class="sr-txt"><div class="sr-t">渲染状态</div><div class="sr-d">当前生效的渲染模式</div></div>
+            <span class="sr-v" id="tvFxState">FULL FX</span>
+          </div>
+        </div>
+        <div class="tv-scard">
+          <div class="tv-srow">
+            <div class="sr-txt"><div class="sr-t">处理器线程</div><div class="sr-d">hardwareConcurrency</div></div>
+            <span class="sr-v" id="tvInfoCores">--</span>
+          </div>
+          <div class="tv-srow">
+            <div class="sr-txt"><div class="sr-t">设备内存</div><div class="sr-d">deviceMemory（GB）</div></div>
+            <span class="sr-v" id="tvInfoMem">--</span>
+          </div>
+          <div class="tv-srow">
+            <div class="sr-txt"><div class="sr-t">系统减动效</div><div class="sr-d">prefers-reduced-motion</div></div>
+            <span class="sr-v" id="tvInfoRM">--</span>
+          </div>
+        </div>
+        <div class="tv-scard">
+          <div class="tv-srow">
+            <div class="sr-txt"><div class="sr-t">关于本机</div><div class="sr-d">喜悦 Tab · 单文件平板桌面 · 悦享生活，喜由心悦</div></div>
+            <span class="sr-v">v2.0</span>
+          </div>
+          <div class="tv-srow">
+            <div class="sr-txt"><div class="sr-t">壁纸</div><div class="sr-d">Aurora Deep · 深空极光</div></div>
+            <span class="sr-v">LIVE</span>
+          </div>
+          <div class="tv-srow" style="flex-direction:column;align-items:stretch">
+            <div class="sr-txt"><div class="sr-t">壁纸预览</div></div>
+            <div class="tv-wallprev" id="tvWallPrev"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 应用视图 4：Yumi AI ===== -->
+  <div class="tv-view tv-anim" id="tv-yumi">
+    <div class="tv-appbar">
+      <button class="tv-back" data-close>
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M7.5 2 3.5 6l4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        主页
+      </button>
+      <span class="tv-ab-title">Yumi AI</span>
+      <span class="tv-ab-note">maxmind-2.5-maria</span>
+      <button class="tv-ab-clear" id="tvYClear">清空对话</button>
+    </div>
+    <div class="tv-yumi">
+      <div class="tv-ymsgs" id="tvYMsgs">
+        <div class="tv-yumi-hint" id="tvYHint">
+          <b>YUMI AI</b>
+          平板内置的 AI 助手 —— 聊天、写作、翻译、问作业都可以。
+          <div class="tv-ychips">
+            <button class="tv-ychip">介绍一下喜悦-悦享生活</button>
+            <button class="tv-ychip">用一句话解释什么是黑洞</button>
+            <button class="tv-ychip">帮我写一条 B站视频标题</button>
+          </div>
+        </div>
+      </div>
+      <div class="tv-ybar">
+        <textarea class="tv-yinput" id="tvYInput" rows="1" placeholder="问 Yumi 任何问题…（Enter 发送，Shift+Enter 换行）"></textarea>
+        <button class="tv-ysend" id="tvYSend">发送</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============ 喜悦 Tab · 桌面逻辑 ============ */
+(function(){
+'use strict';
+var root = document.documentElement;
+var WALL = 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=dark%20futuristic%20tablet%20wallpaper%2C%20deep%20navy%20and%20teal%20aurora%20waves%20flowing%20over%20a%20mountain%20silhouette%20night%20sky%2C%20subtle%20glowing%20stars%2C%20smooth%20gradient%2C%20minimal%20cinematic%20atmosphere%2C%20ultra%20clean%2C%20no%20text&image_size=landscape_16_9';
+var wall = document.getElementById('tvWall');
+wall.style.backgroundImage = 'url("' + WALL + '")';
+var wallPrev = document.getElementById('tvWallPrev');
+if(wallPrev) wallPrev.style.backgroundImage = 'url("' + WALL + '")';
+
+/* ---------- 性能自适应（与原站同策略） ---------- */
+var fxOn = true, autoReason = '', stored = localStorage.getItem('fx');
+function applyFX(on, reason){
+  fxOn = on;
+  root.classList.toggle('tv-fx-off', !on);
+  var sw = document.getElementById('tvFxSwitch');
+  if(sw) sw.classList.toggle('on', on);
+  var st = document.getElementById('tvFxState');
+  if(st) st.textContent = on ? 'FULL FX' : 'LITE MODE' + (reason ? ' (' + reason + ')' : '');
+  var sb = document.getElementById('tvSbFx');
+  if(sb) sb.textContent = on ? 'FX FULL' : 'FX LITE';
+  /* 同步控制内嵌个人主页 App 的效果开关 */
+  if(window.legacyFX){ try{ window.legacyFX.set(on, reason || 'SYNC'); }catch(e){} }
+}
+function staticCheck(){
+  var cores = navigator.hardwareConcurrency || 8;
+  var mem = navigator.deviceMemory || 8;
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches) return 'REDUCED-MOTION';
+  if(cores <= 4 || mem <= 4) return 'LOW-HW';
+  return null;
+}
+var hw = staticCheck();
+if(stored === 'off'){ fxOn = false; autoReason = 'MANUAL'; }
+else if(stored === 'on'){ fxOn = true; }
+else if(hw){ fxOn = false; autoReason = hw; }
+applyFX(fxOn, autoReason);
+
+/* 运行时 FPS 采样：低于阈值自动降级（用户手动选择过则不干预） */
+if(!stored && fxOn){
+  var samples = [], last = performance.now(), started = performance.now();
+  var tick = function(now){
+    var dt = now - last; last = now;
+    if(dt > 0 && dt < 1000) samples.push(1000 / dt);
+    if(samples.length < 140){ requestAnimationFrame(tick); return; }
+    var avg = samples.reduce(function(a,b){return a+b;},0) / samples.length;
+    if(avg < 42) applyFX(false, 'AUTO ' + Math.round(avg) + 'FPS');
+  };
+  setTimeout(function(){ requestAnimationFrame(tick); }, 1400);
+}
+
+var fxSwitch = document.getElementById('tvFxSwitch');
+if(fxSwitch) fxSwitch.addEventListener('click', function(){
+  var next = !fxOn;
+  localStorage.setItem('fx', next ? 'on' : 'off');
+  applyFX(next, next ? '' : 'MANUAL');
+});
+
+/* ---------- 系统信息 ---------- */
+var el;
+el = document.getElementById('tvInfoCores'); if(el) el.textContent = (navigator.hardwareConcurrency || '--') + ' THREADS';
+el = document.getElementById('tvInfoMem'); if(el) el.textContent = (navigator.deviceMemory || '--') + ' GB';
+el = document.getElementById('tvInfoRM'); if(el) el.textContent = matchMedia('(prefers-reduced-motion: reduce)').matches ? 'ON' : 'OFF';
+
+/* ---------- 时钟 ---------- */
+var p2 = function(n){ return String(n).padStart(2, '0'); };
+var week = ['周日','周一','周二','周三','周四','周五','周六'];
+function tvClock(){
+  var d = new Date();
+  var hm = p2(d.getHours()) + ':' + p2(d.getMinutes());
+  var t1 = document.getElementById('tvSbTime');
+  if(t1) t1.textContent = hm;
+  var t2 = document.getElementById('tvBigTime');
+  if(t2) t2.textContent = hm;
+  var ds = d.getFullYear() + '.' + p2(d.getMonth()+1) + '.' + p2(d.getDate());
+  var d1 = document.getElementById('tvSbDate');
+  if(d1) d1.textContent = ds + ' ' + week[d.getDay()];
+  var d2 = document.getElementById('tvBigDate');
+  if(d2) d2.textContent = ds + ' ' + week[d.getDay()] + ' · DALIAN';
+}
+tvClock(); setInterval(tvClock, 1000);
+
+/* ---------- 应用打开 / 关闭（双层图标转场） ---------- */
+var views = {}, current = null;
+document.querySelectorAll('.tv-view').forEach(function(v){ views[v.id] = v; });
+/* 锚点跳转守护：旧站 #hash 滚动会连带把 overflow:hidden 的外层（#tv-screen / 视图）也滚走，
+   状态栏、启动器、手势条会整体上移出视口 —— 这里强制外层永远不产生滚动位移 */
+(function(){
+  var hosts = [document.getElementById('tv-screen')].concat(
+    Array.prototype.slice.call(document.querySelectorAll('.tv-view')));
+  hosts.forEach(function(el){
+    el.addEventListener('scroll', function(){
+      if(el.scrollTop) el.scrollTop = 0;
+      if(el.scrollLeft) el.scrollLeft = 0;
+    }, { passive: true });
+  });
+  /* 旧站锚点接管：浏览器的 #hash 导航会沿滚动容器链逐层上滚（把 overflow:hidden 的
+     #tv-screen 也滚走，且会被上面的归零打断内部滚动）。改为拦截点击，只滚 #legacy 自身 */
+  var legacyRoot = document.getElementById('legacy');
+  if(legacyRoot){
+    legacyRoot.addEventListener('click', function(e){
+      var a = e.target && e.target.closest ? e.target.closest('a[href^="#"]') : null;
+      if(!a || !legacyRoot.contains(a)) return;
+      e.preventDefault();
+      var id = (a.getAttribute('href') || '').slice(1);
+      var t = id ? document.getElementById(id) : null;
+      var top = 0;
+      if(t && t !== legacyRoot && legacyRoot.contains(t)){
+        top = t.getBoundingClientRect().top - legacyRoot.getBoundingClientRect().top + legacyRoot.scrollTop;
+        if(id !== 'top') top -= 60; /* 避开固定导航栏 */
+      }
+      top = Math.max(0, Math.round(top));
+      try{ history.pushState(null, '', '#' + (id || 'top')); }catch(err){}
+      var smooth = !document.documentElement.classList.contains('tv-fx-off')
+                && !legacyRoot.classList.contains('fx-off');
+      legacyRoot.scrollTo({ top: top, behavior: smooth ? 'smooth' : 'auto' });
+    }, { capture: true });
+  }
+})();
+var zBack = null, zFront = null;
+function overlays(){
+  if(!zBack){
+    zBack = document.createElement('div'); zBack.id = 'tv-zback';
+    document.getElementById('tv-screen').appendChild(zBack);
+  }
+  if(!zFront){
+    zFront = document.createElement('div'); zFront.id = 'tv-zfront';
+    document.getElementById('tv-screen').appendChild(zFront);
+  }
+}
+function iconOf(id){
+  var btns = document.querySelectorAll('.tv-app[data-open="' + id + '"]');
+  for(var i = 0; i < btns.length; i++){
+    if(btns[i].offsetParent !== null) return btns[i];
+  }
+  return btns[0] || null;
+}
+function clearViewStyle(v){
+  v.style.transition = '';
+  v.style.transform = '';
+  v.style.borderRadius = '';
+}
+function hideOverlays(){
+  if(zBack) zBack.style.display = 'none';
+  if(zFront) zFront.style.display = 'none';
+}
+function openApp(id){
+  var v = views[id];
+  if(!v || current === id) return;
+  closeApp(true);
+  overlays();
+  var btn = iconOf(id);
+  var tile = btn ? btn.querySelector('.tv-tile') : null;
+  var glyph = tile ? tile.querySelector('img') : null;
+  var vw = innerWidth, vh = innerHeight;
+  /* 复位遮罩层到图标位置（底层 = 纯色底板，上层 = 图标字形） */
+  zBack.style.transition = 'none';
+  zFront.style.transition = 'none';
+  zFront.style.opacity = '1';
+  zFront.style.transform = 'none';
+  zFront.innerHTML = '';
+  var hasTile = !!tile;
+  if(hasTile){
+    var r = tile.getBoundingClientRect();
+    zBack.style.display = 'block';
+    zBack.style.left = r.left + 'px';
+    zBack.style.top = r.top + 'px';
+    zBack.style.width = r.width + 'px';
+    zBack.style.height = r.height + 'px';
+    zBack.style.borderRadius = getComputedStyle(tile).borderRadius;
+    zBack.style.background = getComputedStyle(tile).backgroundColor;
+    if(glyph){
+      var g = glyph.getBoundingClientRect();
+      zFront.style.display = 'block';
+      zFront.style.left = g.left + 'px';
+      zFront.style.top = g.top + 'px';
+      zFront.style.width = g.width + 'px';
+      zFront.style.height = g.height + 'px';
+      var im = document.createElement('img');
+      im.src = glyph.currentSrc || glyph.src;
+      zFront.appendChild(im);
+    } else {
+      zFront.style.display = 'none';
+    }
+  } else {
+    hideOverlays();
+  }
+  clearViewStyle(v);
+  v.classList.add('tv-shown');
+  v._tvSeq = (v._tvSeq || 0) + 1;   /* 使仍在飞行中的关闭动画回调失效 */
+  var hd0 = document.querySelector('#legacy header');
+  if(hd0) hd0.style.top = '';
+  void v.offsetWidth;
+  current = id;
+  document.getElementById('tv-screen').classList.add('tv-app-open');
+  document.querySelectorAll('.tv-app[data-open="' + id + '"]').forEach(function(b){
+    b.classList.add('running');
+  });
+  var sc = v.querySelector('.tv-scroll');
+  if(sc) sc.scrollTop = 0;
+
+  var instant = !hasTile || document.documentElement.classList.contains('tv-fx-off');
+  if(instant){
+    hideOverlays();
+    v.classList.add('tv-open');
+    return;
+  }
+  requestAnimationFrame(function(){
+    /* 底层纯色底板：非线性放大至全屏 */
+    zBack.style.transition = '';
+    zBack.style.left = '0px';
+    zBack.style.top = '0px';
+    zBack.style.width = vw + 'px';
+    zBack.style.height = vh + 'px';
+    zBack.style.borderRadius = '0px';
+    /* 上层图标：飞到屏幕中央并淡出 */
+    if(zFront.style.display !== 'none'){
+      zFront.style.transition = '';
+      var fr = zFront.getBoundingClientRect();
+      var dx = vw / 2 - (fr.left + fr.width / 2);
+      var dy = vh / 2 - (fr.top + fr.height / 2);
+      zFront.style.transform = 'translate(' + dx + 'px,' + dy + 'px) scale(1.5)';
+      zFront.style.opacity = '0';
+    }
+    /* 底层接近铺满后，应用内容淡入 */
+    setTimeout(function(){
+      if(current === id) v.classList.add('tv-open');
+    }, 300);
+  });
+  setTimeout(function(){
+    if(current === id) hideOverlays();
+  }, 1000);
+}
+function closeApp(silent){
+  if(!current) return;
+  var id = current, v = views[current];
+  current = null;
+  if(!silent) document.getElementById('tv-screen').classList.remove('tv-app-open');
+  var seq = (v._tvSeq = (v._tvSeq || 0) + 1);
+  hideOverlays();
+  var btn = iconOf(id);
+  var tile = btn ? btn.querySelector('.tv-tile') : null;
+  var finished = false;
+  var finish = function(){
+    if(finished || v._tvSeq !== seq) return;
+    finished = true;
+    v.classList.remove('tv-open', 'tv-shown');
+    clearViewStyle(v);
+    var hd = document.querySelector('#legacy header');
+    if(hd) hd.style.top = '';
+    if(btn) btn.classList.remove('running');
+  };
+  if(silent){
+    finish();
+    return;
+  }
+  if(!tile || document.documentElement.classList.contains('tv-fx-off')){
+    v.classList.remove('tv-open');
+    setTimeout(finish, 380);
+    return;
+  }
+  /* 关闭：整个应用界面缩成图标大小，回到原位（非线性） */
+  /* 视图加 transform 后 fixed 元素改为相对视图定位，补偿旧站导航的 36px 偏移 */
+  var hd = document.querySelector('#legacy header');
+  if(hd) hd.style.top = '0px';
+  var r = tile.getBoundingClientRect();
+  var vr = v.getBoundingClientRect();
+  var sx = r.width / vr.width, sy = r.height / vr.height;
+  var dx = (r.left + r.width / 2) - (vr.left + vr.width / 2);
+  var dy = (r.top + r.height / 2) - (vr.top + vr.height / 2);
+  v.style.transition = 'transform .55s cubic-bezier(.7,0,.2,1),border-radius .55s cubic-bezier(.7,0,.2,1)';
+  v.style.transform = 'translate(' + dx + 'px,' + dy + 'px) scale(' + sx + ',' + sy + ')';
+  v.style.borderRadius = (20 / Math.max(sx, .01)) + 'px / ' + (20 / Math.max(sy, .01)) + 'px';
+  var onEnd = function(e){
+    if(e && e.target !== v) return;
+    v.removeEventListener('transitionend', onEnd);
+    finish();
+  };
+  v.addEventListener('transitionend', onEnd);
+  setTimeout(function(){
+    v.removeEventListener('transitionend', onEnd);
+    finish();
+  }, 780);
+}
+document.querySelectorAll('.tv-app[data-open]').forEach(function(b){
+  b.addEventListener('click', function(){ openApp(b.dataset.open); });
+});
+document.querySelectorAll('[data-close]').forEach(function(b){
+  b.addEventListener('click', function(){ closeApp(); });
+});
+document.getElementById('tvHome').addEventListener('click', function(){ closeApp(); });
+addEventListener('keydown', function(e){ if(e.key === 'Escape') closeApp(); });
+
+/* ---------- Yumi AI 聊天（OpenAI 兼容接口 · 流式输出） ---------- */
+(function(){
+  var API = 'https://api.maxmind.online/v1';
+  var KEY = 'sk-aip-82f67a7666f0e5742248b1aca009fbf09f020892';
+  var MODEL = 'maxmind-2.5-maria-preview-1020';
+  /* 系统提示词：把网站与站主的全部背景告诉模型，问"我是谁"也能答对 */
+  var SYS = [
+    '你是「Yumi AI」—— 喜悦 Tab（喜悦-悦享生活的单文件平板桌面网站）内置的 AI 助手。',
+    '风格友好、简洁、有活力，优先用中文回答。',
+    '以下是站主与网站的全部背景资料，被问到"我是谁""站主是谁""喜悦是谁"等问题时必须据此如实回答：',
+    '1) 站主：喜悦-悦享生活（简称"喜悦"），Bilibili 科技区 UP 主。UID 3546937275976343，空间 space.bilibili.com/3546937275976343，等级 LV4，粉丝约 2704（网站显示 2K+），累计投稿 181 个，个人认证"bilibili知名科技UP主"。',
+    '2) 口号：悦享生活，喜由心悦；坐标大连。',
+    '3) 代表作：PPTOS 作品系列（成名作，在学校希沃白板上展示，也是 OK Store 资源的灵感来源）；「如何用设置看B站？」24.6 万播放（代表作）；「小天才Q1y成功看上B站了！」6384 播放；「vivo 的 DeepSeek 竟然能生图？！」1481 播放；纯 HTML/CSS 手搓的「HTML 手机系统」（网站里可试玩）。',
+    '4) 内容方向：脑洞大开的科技整活与教程，例如「看B站」系列（用设置/小天才手表看 B站）、AI 整活（有趣的 DeepSeek、vivo 全损铃声闹钟、希沃真美味）、系统怀旧（WindowsXP）。',
+    '5) 联系方式：个人主页 yue123456.mysxl.cn；OK Store 资源页 www.okteam.cn/store/user/59（上架 4 个资源）；邮箱 zxc12345639@outlook.com；QQ 群「喜悦小屋-客厅」群号 1062762654（qm.qq.com/q/rFeorXxUiY）；抖音搜索"喜悦-悦享生活"。',
+    '6) 网站本身：单文件 HTML 的平板桌面，应用包括 Yumi AI（你）、个人主页（原单页站点内嵌）、视频（B站投稿列表）、设置（特效与性能开关），以及邮件/Bilibili/OK Store/旧站/抖音 直达图标；暗色极光未来风，设备性能不足时会自动进入 LITE 降级模式。',
+    '资料范围之外的问题请坦诚说明，不要编造站主的其他隐私或经历。'
+  ].join('\n');
+  var msgsEl = document.getElementById('tvYMsgs'),
+      input = document.getElementById('tvYInput'),
+      sendBtn = document.getElementById('tvYSend'),
+      clearBtn = document.getElementById('tvYClear'),
+      hint = document.getElementById('tvYHint');
+  if(!msgsEl || !input || !sendBtn) return;
+  var history = [], busy = false;
+
+  function scrollBottom(){ msgsEl.scrollTop = msgsEl.scrollHeight; }
+  function addMsg(cls, text){
+    var d = document.createElement('div');
+    d.className = 'tv-ym ' + cls;
+    if(text != null) d.textContent = text;
+    msgsEl.appendChild(d); scrollBottom(); return d;
+  }
+  function autoGrow(){
+    input.style.height = 'auto';
+    input.style.height = Math.min(input.scrollHeight, 132) + 'px';
+  }
+  function setBusy(v){ busy = v; sendBtn.disabled = v; }
+  input.addEventListener('input', autoGrow);
+  input.addEventListener('keydown', function(e){
+    if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); send(); }
+  });
+  sendBtn.addEventListener('click', send);
+  document.querySelectorAll('#tvYHint .tv-ychip').forEach(function(c){
+    c.addEventListener('click', function(){ input.value = c.textContent.trim(); send(); });
+  });
+  if(clearBtn) clearBtn.addEventListener('click', function(){
+    history = [];
+    msgsEl.querySelectorAll('.tv-ym').forEach(function(n){ n.remove(); });
+    if(hint) hint.style.display = '';
+    input.value = ''; autoGrow(); input.focus();
+  });
+
+  async function send(){
+    var text = (input.value || '').trim();
+    if(!text || busy) return;
+    setBusy(true);
+    if(hint) hint.style.display = 'none';
+    addMsg('user', text);
+    history.push({ role:'user', content:text });
+    input.value = ''; autoGrow();
+    var think = addMsg('think');
+    think.innerHTML = '<i></i><i></i><i></i>YUMI 思考中…';
+    try{
+      var r = await fetch(API + '/chat/completions', {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer ' + KEY },
+        body: JSON.stringify({ model: MODEL, messages: [{ role:'system', content: SYS }].concat(history), stream: true })
+      });
+      if(!r.ok || !r.body){
+        var errTxt = '';
+        try{ errTxt = (await r.text()).slice(0, 160); }catch(e2){}
+        throw new Error('HTTP ' + r.status + (errTxt ? ' · ' + errTxt : ''));
+      }
+      var reader = r.body.getReader(), dec = new TextDecoder(), buf = '', aiText = '', bubble = null;
+      while(true){
+        var chunk = await reader.read();
+        if(chunk.done) break;
+        buf += dec.decode(chunk.value, { stream:true });
+        var lines = buf.split('\n'); buf = lines.pop();
+        for(var i = 0; i < lines.length; i++){
+          var ln = lines[i].trim();
+          if(ln.indexOf('data:') !== 0) continue;
+          var data = ln.slice(5).trim();
+          if(!data || data === '[DONE]') continue;
+          try{
+            var j = JSON.parse(data);
+            var d = j.choices && j.choices[0] && j.choices[0].delta;
+            if(d && d.content){
+              aiText += d.content;
+              if(!bubble){ think.remove(); bubble = addMsg('ai', ''); }
+              bubble.textContent = aiText;
+              scrollBottom();
+            }
+          }catch(e3){}
+        }
+      }
+      if(!bubble){ think.remove(); bubble = addMsg('ai', aiText || '(模型没有返回内容)'); }
+      history.push({ role:'assistant', content: aiText || '' });
+    }catch(err){
+      think.remove();
+      history.pop();
+      addMsg('ai err', '出错了：' + (err && err.message ? err.message : String(err)));
+    }finally{
+      setBusy(false);
+    }
+  }
+})();
+
+/* ---------- 壁纸视差（fx 开启时） ---------- */
+var screenEl = document.getElementById('tv-screen');
+screenEl.addEventListener('mousemove', function(e){
+  if(!fxOn) return;
+  var x = (e.clientX / innerWidth - .5) * 1.4;
+  var y = (e.clientY / innerHeight - .5) * 1.4;
+  wall.style.marginLeft = (-x) + '%';
+  wall.style.marginTop = (-y) + '%';
+});
+})();
+</script>
+
+<!-- 个人主页 App 的原有脚本（作用域已改为 #legacy） -->
+<script>
+(function(){
+'use strict';
+
+/* =========================================================
+   性能自适应系统
+   - 静态检测：CPU 核心 / 内存 / 系统减动效偏好
+   - 运行时 FPS 采样：持续低于阈值自动降级
+   - 手动开关：导航栏 FX 按钮（记忆用户选择）
+   降级后：关闭粒子背景、光标特效、倾斜、滚动动画等大多数效果
+========================================================= */
+var body = document.getElementById('legacy');
+var state = { userChoice: localStorage.getItem('fx'), auto: true };
+var perfStatus = document.getElementById('perfStatus');
+var fxBtn = document.getElementById('fxToggle');
+
+function setFX(on, reason){
+  body.classList.toggle('fx-off', !on);
+  fxBtn.textContent = on ? 'FX · ON' : 'FX · OFF';
+  fxBtn.classList.toggle('off', !on);
+  perfStatus.textContent = on ? 'RENDER · FULL FX' : 'RENDER · LITE MODE' + (reason ? ' (' + reason + ')' : '');
+  canvasFX.enabled = on;
+  if(on){ initCanvas(); } else { stopCanvas(); }
+}
+
+function staticCheck(){
+  var cores = navigator.hardwareConcurrency || 8;
+  var mem = navigator.deviceMemory || 8;
+  var rm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(rm) return 'REDUCED-MOTION';
+  if(cores <= 4 || mem <= 4) return 'LOW-HW';
+  return null;
+}
+
+/* 运行时 FPS 采样：窗口期平均帧率低于阈值即自动降级 */
+var fpsMonitor = {
+  samples: [], last: 0, done: false,
+  start: function(){
+    if(state.userChoice) return; // 用户手动选择过就不自动干预
+    this.last = performance.now();
+    var self = this;
+    var tick = function(now){
+      var dt = now - self.last; self.last = now;
+      if(dt > 0 && dt < 1000) self.samples.push(1000 / dt);
+      if(self.samples.length < 150){ requestAnimationFrame(tick); return; }
+      var avg = self.samples.reduce(function(a,b){return a+b;},0) / self.samples.length;
+      if(avg < 42){ state.auto = false; setFX(false, 'AUTO ' + Math.round(avg) + 'FPS'); }
+      self.done = true;
+    };
+    setTimeout(function(){ requestAnimationFrame(tick); }, 1500);
+  }
+};
+
+/* ---------- 粒子网络背景 ---------- */
+var canvasFX = {
+  enabled: true, c: null, ctx: null, pts: [], raf: null, dpr: 1,
+  resize: function(){
+    if(!this.ctx) return;
+    this.dpr = Math.min(window.devicePixelRatio || 1, 2);
+    this.c.width = innerWidth * this.dpr;
+    this.c.height = innerHeight * this.dpr;
+    this.c.style.width = innerWidth + 'px';
+    this.c.style.height = innerHeight + 'px';
+    this.ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+    var n = Math.min(110, Math.floor(innerWidth * innerHeight / 16000));
+    this.pts = [];
+    for(var i = 0; i < n; i++){
+      this.pts.push({
+        x: Math.random() * innerWidth, y: Math.random() * innerHeight,
+        vx: (Math.random() - .5) * .45, vy: (Math.random() - .5) * .45,
+        r: Math.random() * 1.6 + .6
+      });
+    }
+  },
+  frame: function(){
+    if(!this.enabled) return;
+    var ctx = this.ctx, w = innerWidth, h = innerHeight;
+    ctx.clearRect(0, 0, w, h);
+    var p = this.pts, i, j, a, b, dx, dy, d;
+    for(i = 0; i < p.length; i++){
+      a = p[i];
+      a.x += a.vx; a.y += a.vy;
+      if(a.x < 0 || a.x > w) a.vx *= -1;
+      if(a.y < 0 || a.y > h) a.vy *= -1;
+      ctx.beginPath();
+      ctx.arc(a.x, a.y, a.r, 0, 6.283);
+      ctx.fillStyle = 'rgba(110,240,255,.75)';
+      ctx.fill();
+    }
+    for(i = 0; i < p.length; i++){
+      for(j = i + 1; j < p.length; j++){
+        a = p[i]; b = p[j];
+        dx = a.x - b.x; dy = a.y - b.y;
+        d = Math.sqrt(dx * dx + dy * dy);
+        if(d < 130){
+          ctx.beginPath();
+          ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
+          ctx.strokeStyle = 'rgba(143,123,255,' + (0.30 * (1 - d / 130)) + ')';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+      }
+    }
+    this.raf = requestAnimationFrame(this.frame.bind(this));
+  }
+};
+
+function initCanvas(){
+  if(canvasFX.raf || !canvasFX.enabled) return;
+  canvasFX.c = document.getElementById('bg');
+  canvasFX.ctx = canvasFX.c.getContext('2d');
+  canvasFX.resize();
+  canvasFX.frame();
+}
+function stopCanvas(){
+  if(canvasFX.raf){ cancelAnimationFrame(canvasFX.raf); canvasFX.raf = null; }
+  if(canvasFX.ctx) canvasFX.ctx.clearRect(0, 0, innerWidth, innerHeight);
+}
+addEventListener('resize', function(){ if(canvasFX.enabled) canvasFX.resize(); });
+
+/* ---------- 初始化效果系统 ---------- */
+var fxOn = true;
+if(state.userChoice === 'off'){ fxOn = false; state.auto = false; }
+else if(state.userChoice === 'on'){ fxOn = true; }
+else { var hw = staticCheck(); if(hw){ fxOn = false; state.auto = false; } }
+
+setFX(fxOn, state.auto ? '' : (state.userChoice === 'off' ? 'MANUAL' : 'LOW-HW'));
+if(fxOn){ initCanvas(); fpsMonitor.start(); }
+
+fxBtn.addEventListener('click', function(){
+  var next = body.classList.contains('fx-off');
+  state.userChoice = next ? 'on' : 'off';
+  localStorage.setItem('fx', state.userChoice);
+  setFX(next, next ? '' : 'MANUAL');
+  if(next && !fpsMonitor.done && state.auto) fpsMonitor.start();
+});
+
+/* ---------- 自定义光标 ---------- */
+var fine = matchMedia('(pointer: fine)').matches;
+if(fine) body.classList.add('fine-pointer');
+var dot = document.querySelector('.cur-dot'), ring = document.querySelector('.cur-ring');
+var mx = 0, my = 0, rx = 0, ry = 0;
+addEventListener('mousemove', function(e){
+  mx = e.clientX; my = e.clientY;
+  dot.style.transform = 'translate(' + mx + 'px,' + my + 'px) translate(-50%,-50%)';
+});
+(function ringLoop(){
+  rx += (mx - rx) * .16; ry += (my - ry) * .16;
+  ring.style.transform = 'translate(' + rx + 'px,' + ry + 'px) translate(-50%,-50%)';
+  requestAnimationFrame(ringLoop);
+})();
+document.querySelectorAll('a, button, .work').forEach(function(el){
+  el.addEventListener('mouseenter', function(){ ring.classList.add('hot'); });
+  el.addEventListener('mouseleave', function(){ ring.classList.remove('hot'); });
+});
+
+/* ---------- 滚动显现 ---------- */
+var io = new IntersectionObserver(function(entries){
+  entries.forEach(function(en){
+    if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); }
+  });
+}, { threshold: .12 });
+document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+
+/* ---------- 数字计数 ---------- */
+var countIO = new IntersectionObserver(function(entries){
+  entries.forEach(function(en){
+    if(!en.isIntersecting) return;
+    var el = en.target, target = +el.dataset.count, t0 = performance.now();
+    var step = function(now){
+      var p = Math.min((now - t0) / 1400, 1);
+      var ease = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.round(target * ease) + (target > 100 ? '+' : '');
+      if(p < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+    countIO.unobserve(el);
+  });
+}, { threshold: .5 });
+document.querySelectorAll('[data-count]').forEach(function(el){ countIO.observe(el); });
+
+/* ---------- 卡片 3D 倾斜 ---------- */
+document.querySelectorAll('.tilt').forEach(function(card){
+  card.addEventListener('mousemove', function(e){
+    if(body.classList.contains('fx-off')) return;
+    var r = card.getBoundingClientRect();
+    var px = (e.clientX - r.left) / r.width - .5;
+    var py = (e.clientY - r.top) / r.height - .5;
+    card.style.transform = 'perspective(900px) rotateY(' + (px * 8) + 'deg) rotateX(' + (-py * 8) + 'deg) translateY(-4px)';
+  });
+  card.addEventListener('mouseleave', function(){ card.style.transform = ''; });
+});
+
+/* ---------- 磁吸按钮 ---------- */
+document.querySelectorAll('.magnet').forEach(function(el){
+  el.addEventListener('mousemove', function(e){
+    if(body.classList.contains('fx-off')) return;
+    var r = el.getBoundingClientRect();
+    var x = (e.clientX - r.left - r.width / 2) * .22;
+    var y = (e.clientY - r.top - r.height / 2) * .3;
+    el.style.transform = 'translate(' + x + 'px,' + y + 'px)';
+  });
+  el.addEventListener('mouseleave', function(){ el.style.transform = ''; });
+});
+
+/* ---------- 跑马灯无缝复制 ---------- */
+var mq = document.getElementById('mq');
+mq.innerHTML += mq.innerHTML;
+
+/* ---------- 时钟 ---------- */
+var clock = document.getElementById('clock');
+function tickClock(){
+  var d = new Date();
+  var p = function(n){ return String(n).padStart(2, '0'); };
+  clock.textContent = 'LOCAL ' + p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
+}
+tickClock(); setInterval(tickClock, 1000);
+
+
+window.legacyFX = { set: function(on, reason){ setFX(on, reason); } };
+})();
+</script>
+
+</body>
+</html>
