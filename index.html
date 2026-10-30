@@ -100,175 +100,172 @@
       gap: 14px;
     }
 
-    .message {
-      max-width: min(78%, 760px);
+    .msg {
+      max-width: 82%;
       padding: 14px 16px;
-      border-radius: 16px;
+      border-radius: 18px;
       line-height: 1.7;
+      font-size: 14px;
       white-space: pre-wrap;
       word-break: break-word;
-      animation: in 0.3s ease;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02);
     }
 
-    @keyframes in {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: none; }
-    }
-
-    .message.user {
+    .msg.user {
       align-self: flex-end;
       background: linear-gradient(135deg, var(--cyan), var(--purple));
-      color: #07131d;
+      color: #081621;
       border-bottom-right-radius: 6px;
       font-weight: 600;
     }
 
-    .message.ai {
+    .msg.ai {
       align-self: flex-start;
-      background: rgba(17, 26, 40, 0.82);
+      background: rgba(18, 28, 43, 0.92);
       border: 1px solid var(--line);
       border-bottom-left-radius: 6px;
-      color: var(--text);
     }
 
-    .message.err {
+    .msg.err {
       align-self: flex-start;
-      background: rgba(100, 28, 49, 0.65);
-      border: 1px solid rgba(255, 140, 167, 0.5);
-      color: #ffdfe9;
+      background: rgba(39, 17, 27, 0.8);
+      color: #ffd3df;
+      border: 1px solid rgba(255, 139, 171, 0.45);
     }
 
-    .message.search {
-      border: 1px solid rgba(111, 233, 255, 0.4);
-      background: rgba(8, 29, 38, 0.8);
-    }
-
-    .typing {
+    .msg.loading {
       align-self: flex-start;
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      min-width: 120px;
-      background: rgba(17, 26, 40, 0.82);
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 12px 14px;
       color: var(--muted);
-      font-size: 12px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
+      background: rgba(18, 28, 43, 0.7);
+      border: 1px dashed var(--line);
+      border-bottom-left-radius: 6px;
     }
 
-    .typing span {
+    .msg.loading .dot {
       width: 7px;
       height: 7px;
-      display: inline-block;
       border-radius: 50%;
       background: var(--acid);
-      animation: blink 1s infinite ease-in-out;
+      display: inline-block;
+      animation: blink 1s ease-in-out infinite;
     }
 
-    .typing span:nth-child(2) { animation-delay: 0.16s; }
-    .typing span:nth-child(3) { animation-delay: 0.32s; }
+    .msg.loading .dot:nth-child(2) { animation-delay: .16s; }
+    .msg.loading .dot:nth-child(3) { animation-delay: .32s; }
 
     @keyframes blink {
-      0%, 80%, 100% { opacity: 0.25; transform: translateY(0); }
-      40% { opacity: 1; transform: translateY(-4px); }
+      0%, 80%, 100% { opacity: 0.2; transform: translateY(0); }
+      40% { opacity: 1; transform: translateY(-3px); }
     }
 
     .composer {
-      border-top: 1px solid var(--line);
-      background: rgba(8, 12, 21, 0.94);
-      padding: 14px 16px 18px;
-    }
-
-    .composer-row {
       display: flex;
+      align-items: flex-end;
       gap: 12px;
-      align-items: end;
+      padding: 14px 16px 18px;
+      border-top: 1px solid var(--line);
+      background: rgba(10, 16, 28, 0.9);
     }
 
     textarea {
       flex: 1;
-      min-height: 56px;
-      max-height: 180px;
-      resize: vertical;
+      min-height: 52px;
+      max-height: 160px;
+      resize: none;
       border: 1px solid var(--line);
-      border-radius: 16px;
-      background: rgba(9, 13, 22, 0.7);
+      background: rgba(9, 16, 27, 0.92);
       color: var(--text);
+      border-radius: 16px;
       padding: 14px 16px;
-      font-size: 15px;
-      line-height: 1.6;
+      font: inherit;
       outline: none;
+      line-height: 1.5;
       transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
 
     textarea:focus {
-      border-color: rgba(111, 233, 255, 0.7);
+      border-color: rgba(111, 233, 255, 0.8);
       box-shadow: 0 0 0 3px rgba(111, 233, 255, 0.12);
     }
 
-    .btn {
+    .send {
       border: 0;
-      border-radius: 14px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--acid), #b9ff62);
+      color: #071814;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
       padding: 0 18px;
-      min-height: 56px;
-      font-weight: 700;
-      letter-spacing: 0.06em;
+      height: 52px;
       cursor: pointer;
-      transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+      box-shadow: 0 12px 28px rgba(213, 255, 112, 0.28);
     }
 
-    .btn:hover { transform: translateY(-1px); }
-    .btn:disabled { opacity: 0.5; cursor: default; transform: none; }
+    .send:hover {
+      transform: translateY(-1px);
+    }
 
-    .search-btn {
-      background: rgba(111, 233, 255, 0.08);
+    .suggestions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: 12px 18px 0;
+    }
+
+    .chip {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(18, 28, 43, 0.8);
       color: var(--cyan);
-      border: 1px solid rgba(111, 233, 255, 0.35);
+      padding: 8px 12px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: border-color 0.2s ease, transform 0.2s ease;
     }
 
-    .send-btn {
-      background: linear-gradient(135deg, var(--acid), #c6ff85);
-      color: #09210d;
-      box-shadow: 0 18px 30px rgba(213, 255, 112, 0.18);
+    .chip:hover {
+      border-color: rgba(111, 233, 255, 0.7);
+      transform: translateY(-1px);
     }
 
     @media (max-width: 640px) {
-      body { padding: 14px; }
+      body { padding: 12px; }
+      .app { min-height: 92vh; border-radius: 20px; }
       .header { padding: 14px 16px; }
-      .brand { letter-spacing: 0.04em; }
-      .status { display: none; }
-      .composer-row { flex-wrap: wrap; }
-      .search-btn, .send-btn { flex: 1 1 100%; }
-      .message { max-width: 90%; }
+      .brand { letter-spacing: 0.04em; font-size: 14px; }
+      .status { font-size: 10px; }
+      .composer { padding: 12px 12px 14px; }
+      .suggestions { padding: 10px 12px 0; }
+      .msg { max-width: 90%; }
     }
   </style>
 </head>
 <body>
   <div class="app">
     <div class="header">
-      <div class="brand">
-        <span class="brand-dot"></span>
-        <span>Yumi AI</span>
-      </div>
-      <div class="status">联网搜索已开启</div>
+      <div class="brand"><span class="brand-dot"></span> Yumi AI</div>
+      <div class="status">联网搜索模式</div>
     </div>
 
     <div class="chat">
+      <div class="suggestions">
+        <button class="chip" data-query="帮我搜索最近的 AI 热点新闻">AI 热点</button>
+        <button class="chip" data-query="查一下最近的前端技术趋势">前端趋势</button>
+        <button class="chip" data-query="用中文总结一下这个项目的结构">项目结构</button>
+      </div>
+
       <div class="messages" id="messages">
-        <div class="message ai">
-          你好，我是 Yumi。你可以直接提问，或者点击“联网搜索”让我先查一下最新信息。
-        </div>
+        <div class="msg ai">你好，我是 Yumi。你可以直接问我任何问题；如果你带上“搜索 / 查一下 / 最新 / 新闻 / 资讯”等关键词，我会优先联网获取最新信息。</div>
       </div>
 
       <div class="composer">
-        <div class="composer-row">
-          <textarea id="input" rows="1" placeholder="问点什么？例如：今天的 AI 热点、搜索‘OpenAI 最新消息’……"></textarea>
-          <button class="btn search-btn" id="searchBtn" type="button">联网搜索</button>
-          <button class="btn send-btn" id="sendBtn" type="button">发送</button>
-        </div>
+        <textarea id="input" rows="1" placeholder="输入你的问题… 例如：帮我搜索最近的 AI 热点新闻"></textarea>
+        <button class="send" id="send">发送</button>
       </div>
     </div>
   </div>
@@ -276,139 +273,132 @@
   <script>
     const messagesEl = document.getElementById('messages');
     const inputEl = document.getElementById('input');
-    const sendBtn = document.getElementById('sendBtn');
-    const searchBtn = document.getElementById('searchBtn');
+    const sendBtn = document.getElementById('send');
 
-    function addMessage(text, type = 'ai') {
-      const div = document.createElement('div');
-      div.className = `message ${type}`;
-      div.textContent = text;
-      messagesEl.appendChild(div);
+    const pushMessage = (text, type = 'ai') => {
+      const el = document.createElement('div');
+      el.className = `msg ${type}`;
+      el.textContent = text;
+      messagesEl.appendChild(el);
       messagesEl.scrollTop = messagesEl.scrollHeight;
-    }
+    };
 
-    function addTyping() {
-      const typing = document.createElement('div');
-      typing.className = 'typing';
-      typing.innerHTML = '<span></span><span></span><span></span> 搜索中';
-      messagesEl.appendChild(typing);
+    const pushLoading = () => {
+      const el = document.createElement('div');
+      el.className = 'msg loading';
+      el.innerHTML = '<span class="dot"></span><span class="dot"></span><span class="dot"></span> 搜索中';
+      messagesEl.appendChild(el);
       messagesEl.scrollTop = messagesEl.scrollHeight;
-      return typing;
-    }
+      return el;
+    };
 
-    function removeLastTyping() {
-      const typing = messagesEl.querySelector('.typing');
-      if (typing) typing.remove();
-    }
+    const removeLoading = () => {
+      const loading = messagesEl.querySelector('.msg.loading');
+      if (loading) loading.remove();
+    };
 
-    function isSearchIntent(prompt) {
-      const text = prompt.toLowerCase();
-      const patterns = [
-        '搜索', '查一下', '联网', '最新', '新闻', '资讯', '实时', '今天', '最近', '热点',
-        'what is', 'who is', 'latest', 'news', 'search for', 'look up', 'find', 'update'
+    const normalize = (text) => text.trim().replace(/\r\n+/g, '\n');
+
+    const isSearchIntent = (text) => {
+      const q = text.toLowerCase();
+      const keywords = [
+        '搜索', '查一下', '最新', '新闻', '资讯', '热点', '实时', '最近',
+        'search', 'latest', 'news', 'find', 'look up', 'what is', 'who is'
       ];
-      return patterns.some(item => text.includes(item));
-    }
+      return keywords.some(k => q.includes(k));
+    };
 
-    function normalizeSearchText(raw) {
-      return raw.replace(/^[\s\u3000]+|[\s\u3000]+$/g, '').trim();
-    }
-
-    function openSearchInBrowser(query) {
+    const openBing = (query) => {
       const url = 'https://www.bing.com/search?q=' + encodeURIComponent(query);
       window.open(url, '_blank', 'noopener,noreferrer');
-    }
+    };
 
     async function fetchSearchSummary(query) {
-      const urls = [
+      const candidates = [
         'https://r.jina.ai/http://www.bing.com/search?q=' + encodeURIComponent(query),
         'https://r.jina.ai/http://https://www.bing.com/search?q=' + encodeURIComponent(query)
       ];
 
-      for (const url of urls) {
+      for (const url of candidates) {
         try {
           const res = await fetch(url, { mode: 'cors' });
           if (!res.ok) continue;
           const text = await res.text();
-          const cleaned = text
+          const clean = text
             .replace(/\s*\[[^\]]+\]\([^)]*\)/g, '')
             .replace(/\n{3,}/g, '\n\n')
             .trim();
-
-          if (cleaned && cleaned.length > 20) {
-            return cleaned.slice(0, 1200);
-          }
-        } catch (err) {
-          // Ignore and fallback below.
+          if (clean && clean.length > 30) return clean.slice(0, 1400);
+        } catch (e) {
+          // ignore and continue
         }
       }
-
       return null;
     }
 
-    async function handleAsk(prompt) {
-      const question = normalizeSearchText(prompt);
-      if (!question) return;
+    async function answerQuestion(query) {
+      const q = normalize(query);
+      if (!q) return;
 
-      addMessage(question, 'user');
-
-      const shouldSearch = isSearchIntent(question);
-      const typing = addTyping();
+      pushMessage(q, 'user');
+      const loading = pushLoading();
 
       try {
-        let answer = '我先帮你整理一下这个问题。';
+        const searchMode = isSearchIntent(q);
+        let answer = '我可以直接回答你。不过如果你想要最新信息，请在问题中加入“搜索 / 最新 / 新闻 / 资讯”等关键词。';
 
-        if (shouldSearch) {
-          const summary = await fetchSearchSummary(question);
+        if (searchMode) {
+          const summary = await fetchSearchSummary(q);
           if (summary) {
-            answer = '我已联网检索并整理了相关信息：\n\n' + summary;
+            answer = '我已尝试联网整理相关信息：\n\n' + summary;
           } else {
-            answer = '我已尝试联网搜索，但当前环境无法直接抓取搜索结果；已为你在新窗口打开 Bing 搜索。\n\n你也可以直接查看： ' + question;
-            openSearchInBrowser(question);
+            answer = '当前环境无法直接拉取搜索摘要，我已经为你打开 Bing 搜索页，方便你查看最新结果。\n\n搜索词：' + q;
+            openBing(q);
           }
-        } else {
-          answer = '我可以直接回答，不过你也可以在问题里加入“搜索/查一下/最新”等关键词来触发联网搜索。\n\n例如：搜索 OpenAI 最新消息\n查一下今天的 AI 热点';
         }
 
-        removeLastTyping();
-        addMessage(answer, shouldSearch ? 'search' : 'ai');
-      } catch (error) {
-        removeLastTyping();
-        addMessage('联网搜索失败，但你可以直接在新窗口中搜索：' + question + '\n\n' + error.message, 'err');
-        openSearchInBrowser(question);
+        removeLoading();
+        pushMessage(answer, 'ai');
+      } catch (e) {
+        removeLoading();
+        pushMessage('搜索失败了，但你可以直接打开 Bing 搜索页查看最新信息。\n\n搜索词：' + q, 'err');
+        openBing(q);
       }
     }
 
-    function sendCurrentPrompt() {
-      const prompt = inputEl.value.trim();
-      if (!prompt) {
+    const submit = () => {
+      const value = normalize(inputEl.value);
+      if (!value) {
         inputEl.focus();
         return;
       }
-
-      handleAsk(prompt);
+      answerQuestion(value);
       inputEl.value = '';
       inputEl.style.height = 'auto';
-    }
+    };
 
-    sendBtn.addEventListener('click', sendCurrentPrompt);
-    searchBtn.addEventListener('click', () => {
-      const prompt = inputEl.value.trim() || 'AI 热点资讯';
-      inputEl.value = prompt;
-      handleAsk(prompt);
-      inputEl.value = '';
-    });
+    sendBtn.addEventListener('click', submit);
 
-    inputEl.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter' && !event.shiftKey) {
-        event.preventDefault();
-        sendCurrentPrompt();
+    inputEl.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        submit();
       }
     });
 
     inputEl.addEventListener('input', () => {
       inputEl.style.height = 'auto';
       inputEl.style.height = Math.min(inputEl.scrollHeight, 180) + 'px';
+    });
+
+    document.querySelectorAll('.chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const q = chip.dataset.query;
+        inputEl.value = q;
+        inputEl.focus();
+        inputEl.style.height = 'auto';
+        inputEl.style.height = Math.min(inputEl.scrollHeight, 180) + 'px';
+      });
     });
   </script>
 </body>
